@@ -1,0 +1,38 @@
+name: CI Workflow
+
+on:
+  push:
+    branches: [ "main", "feat/*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-test:
+    name: Lint & Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: uv sync
+
+      - name: Run Ruff Linter Check
+        run: uv run python -m ruff check .
+
+      - name: Run Ruff Format Check
+        run: uv run python -m ruff format --check .
+
+      - name: Run Pytest Unit Tests
+        run: uv run python -m pytest tests/ -v

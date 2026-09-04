@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -53,7 +53,9 @@ class EvidenceItem(BaseModel):
         description="General reliability weight of the source (0.0 to 1.0), or None if unassigned",
     )
 
-    reasoning: str = Field(..., description="Transparent explanation of why this report counts as supporting/contradicting evidence")
+    reasoning: str = Field(
+        ..., description="Transparent explanation of why this report counts as supporting/contradicting evidence"
+    )
 
     extracted_event: str | None = Field(default=None, description="Extracted event type (e.g., heavy_rain, flood)")
     extracted_location: str | None = Field(default=None, description="Extracted location name or H3 cell")
@@ -66,7 +68,9 @@ class EvidenceItem(BaseModel):
     def validate_timestamp_utc(cls, v: datetime) -> datetime:
         """Enforces timezone awareness for evidence timestamp and normalizes to UTC."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
-            raise ValueError("Evidence timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+            raise ValueError(
+                "Evidence timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected."
+            )
         return v.astimezone(timezone.utc)
 
 
@@ -90,7 +94,9 @@ class VerificationSummary(BaseModel):
     contradicting_count: int = Field(default=0, ge=0, description="Total number of contradicting evidence items")
 
     supporting_sources: list[str] = Field(default_factory=list, description="Unique source list of supporting evidence")
-    contradicting_sources: list[str] = Field(default_factory=list, description="Unique source list of contradicting evidence")
+    contradicting_sources: list[str] = Field(
+        default_factory=list, description="Unique source list of contradicting evidence"
+    )
 
     evidence_items: list[EvidenceItem] = Field(default_factory=list, description="Detailed list of all evidence items")
 
@@ -109,5 +115,7 @@ class VerificationSummary(BaseModel):
     def validate_updated_at_utc(cls, v: datetime) -> datetime:
         """Enforces timezone awareness for evaluation timestamp and normalizes to UTC."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
-            raise ValueError("updated_at must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+            raise ValueError(
+                "updated_at must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected."
+            )
         return v.astimezone(timezone.utc)

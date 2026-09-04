@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
+
 import h3
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -27,19 +28,27 @@ class WeatherReport(BaseModel):
     # Core Identifiers & Provenance
     report_id: str = Field(..., description="Canonical unique identifier for this report")
     source: str = Field(..., description="Source name (e.g., imd, open_meteo, x, citizen)")
-    source_type: str = Field(..., description="Category of source (e.g., official, weather_api, social_media, news, citizen)")
+    source_type: str = Field(
+        ..., description="Category of source (e.g., official, weather_api, social_media, news, citizen)"
+    )
     source_id: str | None = Field(default=None, description="Original source-specific post/event ID")
 
     # Timestamps (Timezone-Aware UTC)
-    timestamp: datetime = Field(..., description="Time when the weather event was observed/reported (timezone-aware UTC)")
-    received_at: datetime | None = Field(default=None, description="Time when report was ingested into our system (timezone-aware UTC)")
+    timestamp: datetime = Field(
+        ..., description="Time when the weather event was observed/reported (timezone-aware UTC)"
+    )
+    received_at: datetime | None = Field(
+        default=None, description="Time when report was ingested into our system (timezone-aware UTC)"
+    )
 
     # Unstructured Content
     text: str = Field(..., description="Original raw report text or headline")
 
     # Geospatial Indexing
     latitude: float | None = Field(default=None, ge=-90.0, le=90.0, description="Latitude in decimal degrees [-90, 90]")
-    longitude: float | None = Field(default=None, ge=-180.0, le=180.0, description="Longitude in decimal degrees [-180, 180]")
+    longitude: float | None = Field(
+        default=None, ge=-180.0, le=180.0, description="Longitude in decimal degrees [-180, 180]"
+    )
     h3_cell: str | None = Field(default=None, description="Derived H3 spatial hexagon index")
 
     # Location Hierarchy
@@ -49,7 +58,9 @@ class WeatherReport(BaseModel):
     country: str | None = "India"
 
     # Weather Event Category (Downstream AI populates if missing)
-    event_category: str | None = Field(default=None, description="Inferred or reported event type (e.g., heavy_rain, flood)")
+    event_category: str | None = Field(
+        default=None, description="Inferred or reported event type (e.g., heavy_rain, flood)"
+    )
 
     # Metadata & Multimodal
     url: str | None = Field(default=None, description="Original URL reference")
@@ -72,7 +83,9 @@ class WeatherReport(BaseModel):
         if v is None:
             return None
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
-            raise ValueError("Timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+            raise ValueError(
+                "Timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected."
+            )
         return v.astimezone(timezone.utc)
 
     @model_validator(mode="after")

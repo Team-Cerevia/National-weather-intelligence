@@ -1,9 +1,10 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
+
 import pytest
 from pydantic import ValidationError
 
-from contracts.weather_report import MediaItem, WeatherReport, DEFAULT_H3_RESOLUTION
+from contracts.weather_report import DEFAULT_H3_RESOLUTION, WeatherReport
 
 
 def test_1_timezone_aware_timestamp_acceptance():

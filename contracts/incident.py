@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from contracts.evidence import VerificationSummary
+from .evidence import VerificationSummary
 
 
 class IncidentState(str, Enum):
@@ -34,7 +34,9 @@ class IncidentTimeline(BaseModel):
         default_factory=lambda: datetime.now(timezone.utc),
         description="Timestamp of event in timezone-aware UTC",
     )
-    event_type: str = Field(..., description="Timeline event type (e.g. created, state_change, report_added, severity_escalated)")
+    event_type: str = Field(
+        ..., description="Timeline event type (e.g. created, state_change, report_added, severity_escalated)"
+    )
     description: str = Field(..., description="Human-readable explanation of timeline entry")
 
     previous_state: IncidentState | None = None
@@ -49,7 +51,9 @@ class IncidentTimeline(BaseModel):
     @classmethod
     def validate_timestamp_utc(cls, v: datetime) -> datetime:
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
-            raise ValueError("Timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+            raise ValueError(
+                "Timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected."
+            )
         return v.astimezone(timezone.utc)
 
 
@@ -60,7 +64,9 @@ class Incident(BaseModel):
 
     incident_id: str = Field(..., description="Unique canonical identifier for the incident")
     title: str = Field(..., description="Descriptive title of the incident")
-    event_category: str = Field(..., description="Canonical weather category (e.g. RAIN, FLOOD, THUNDERSTORM, HEATWAVE)")
+    event_category: str = Field(
+        ..., description="Canonical weather category (e.g. RAIN, FLOOD, THUNDERSTORM, HEATWAVE)"
+    )
 
     state: IncidentState = Field(default=IncidentState.REPORTED, description="Current lifecycle state")
     severity: IncidentSeverity = Field(default=IncidentSeverity.MODERATE, description="Current severity level")
@@ -103,5 +109,7 @@ class Incident(BaseModel):
     @classmethod
     def validate_datetimes_utc(cls, v: datetime) -> datetime:
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
-            raise ValueError("Datetimes must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+            raise ValueError(
+                "Datetimes must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected."
+            )
         return v.astimezone(timezone.utc)

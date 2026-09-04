@@ -1,11 +1,11 @@
-from contracts.evidence import (
+from .evidence import (
     EvidenceItem,
     EvidenceRelationship,
     VerificationStatus,
     VerificationSummary,
 )
-from contracts.incident import Incident, IncidentSeverity, IncidentState, IncidentTimeline
-from contracts.weather_report import DEFAULT_H3_RESOLUTION, MediaItem, WeatherReport
+from .incident import Incident, IncidentSeverity, IncidentState, IncidentTimeline
+from .weather_report import DEFAULT_H3_RESOLUTION, MediaItem, WeatherReport
 
 __all__ = [
     "WeatherReport",

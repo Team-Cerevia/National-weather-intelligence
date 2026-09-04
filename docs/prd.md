@@ -4,3 +4,4 @@ the weather-related info is scattered eveywhere, various sources, arrives contin
 
 
 Convert fragmented weather signals into evidence-backed, evolving incidents so emergency operators can understand what is happening, where, and which situations need attention.
+

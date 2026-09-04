@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from contracts.evidence import VerificationSummary, get_ist_now
+from contracts.evidence import VerificationSummary
 
 
 class IncidentState(str, Enum):
@@ -28,9 +28,12 @@ class IncidentSeverity(str, Enum):
 class IncidentTimeline(BaseModel):
     """Individual timeline entry tracking incident evolution events."""
 
-    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
 
-    timestamp: datetime = Field(default_factory=get_ist_now, description="Timestamp of event in IST")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp of event in timezone-aware UTC",
+    )
     event_type: str = Field(..., description="Timeline event type (e.g. created, state_change, report_added, severity_escalated)")
     description: str = Field(..., description="Human-readable explanation of timeline entry")
 
@@ -42,11 +45,18 @@ class IncidentTimeline(BaseModel):
 
     report_id: str | None = Field(default=None, description="Associated report ID if triggered by a report")
 
+    @field_validator("timestamp", mode="after")
+    @classmethod
+    def validate_timestamp_utc(cls, v: datetime) -> datetime:
+        if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
+            raise ValueError("Timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+        return v.astimezone(timezone.utc)
+
 
 class Incident(BaseModel):
     """Canonical Incident contract representing a clustered real-world weather incident."""
 
-    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
 
     incident_id: str = Field(..., description="Unique canonical identifier for the incident")
     title: str = Field(..., description="Descriptive title of the incident")
@@ -72,9 +82,15 @@ class Incident(BaseModel):
     state_name: str | None = Field(default=None, description="State name in India")
     country: str | None = "India"
 
-    # Temporal Bounds
-    first_reported_at: datetime = Field(default_factory=get_ist_now, description="Time first report was received in IST")
-    last_updated_at: datetime = Field(default_factory=get_ist_now, description="Time of last update in IST")
+    # Temporal Bounds (Timezone-Aware UTC)
+    first_reported_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Time first report was received in timezone-aware UTC",
+    )
+    last_updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Time of last update in timezone-aware UTC",
+    )
 
     # Clustered Reports & Provenance
     report_ids: list[str] = Field(default_factory=list, description="IDs of all reports clustered into this incident")
@@ -82,3 +98,10 @@ class Incident(BaseModel):
 
     # Evolution Timeline
     timeline: list[IncidentTimeline] = Field(default_factory=list, description="Complete evolution event history")
+
+    @field_validator("first_reported_at", "last_updated_at", mode="after")
+    @classmethod
+    def validate_datetimes_utc(cls, v: datetime) -> datetime:
+        if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
+            raise ValueError("Datetimes must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+        return v.astimezone(timezone.utc)

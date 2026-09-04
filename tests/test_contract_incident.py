@@ -25,7 +25,9 @@ def test_1_valid_complete_incident():
         relationship=EvidenceRelationship.SUPPORTING,
         confidence_score=0.95,
         reasoning="Official IMD radar rainfall confirmation",
+        timestamp=datetime(2026, 9, 4, 10, 30, tzinfo=timezone.utc),
     )
+
     summary = VerificationSummary(
         verification_status=VerificationStatus.VERIFIED,
         overall_confidence=0.92,

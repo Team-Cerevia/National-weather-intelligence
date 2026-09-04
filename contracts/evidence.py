@@ -1,16 +1,7 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
-from pydantic import BaseModel, ConfigDict, Field
-
-# Indian Standard Time (IST) offset: UTC + 05:30
-IST = timezone(timedelta(hours=5, minutes=30))
-
-
-def get_ist_now() -> datetime:
-    """Returns current datetime in Indian Standard Time (IST, UTC+5:30)."""
-    return datetime.now(IST)
-
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class VerificationStatus(str, Enum):
@@ -37,7 +28,7 @@ class EvidenceItem(BaseModel):
     or verifying a weather observation.
     """
 
-    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
 
     evidence_id: str = Field(..., description="Unique ID for this evidence item")
     report_id: str = Field(..., description="ID of the underlying WeatherReport providing this evidence")
@@ -53,13 +44,13 @@ class EvidenceItem(BaseModel):
         default=None,
         ge=0.0,
         le=1.0,
-        description="Processing confidence score exposing uncertainty (0.0 to 1.0), or None if unassigned",
+        description="Processing confidence score exposing uncertainty for this evidence (0.0 to 1.0), or None if unassigned",
     )
     source_reliability_weight: float | None = Field(
         default=None,
         ge=0.0,
         le=1.0,
-        description="Source trust weight (e.g. official=1.0, social=0.6), or None if unassigned",
+        description="General reliability weight of the source (0.0 to 1.0), or None if unassigned",
     )
 
     reasoning: str = Field(..., description="Transparent explanation of why this report counts as supporting/contradicting evidence")
@@ -68,13 +59,21 @@ class EvidenceItem(BaseModel):
     extracted_location: str | None = Field(default=None, description="Extracted location name or H3 cell")
     media_proof_urls: list[str] = Field(default_factory=list, description="URLs of attached photo/video proof")
 
-    timestamp: datetime = Field(default_factory=get_ist_now, description="Timestamp of the evidence report in IST (Asia/Kolkata)")
+    timestamp: datetime = Field(..., description="Timestamp of the underlying evidence report (timezone-aware UTC)")
+
+    @field_validator("timestamp", mode="after")
+    @classmethod
+    def validate_timestamp_utc(cls, v: datetime) -> datetime:
+        """Enforces timezone awareness for evidence timestamp and normalizes to UTC."""
+        if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
+            raise ValueError("Evidence timestamp must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+        return v.astimezone(timezone.utc)
 
 
 class VerificationSummary(BaseModel):
     """Explainable evidence summary answering: 'Why does the system believe this incident is real?'"""
 
-    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
 
     verification_status: VerificationStatus = Field(
         default=VerificationStatus.UNVERIFIED,
@@ -100,5 +99,15 @@ class VerificationSummary(BaseModel):
         description="Transparent human-readable evidence summary for operators",
     )
 
-    updated_at: datetime = Field(default_factory=get_ist_now, description="Last evidence evaluation time in IST (Asia/Kolkata)")
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Last evidence evaluation/processing timestamp (timezone-aware UTC)",
+    )
 
+    @field_validator("updated_at", mode="after")
+    @classmethod
+    def validate_updated_at_utc(cls, v: datetime) -> datetime:
+        """Enforces timezone awareness for evaluation timestamp and normalizes to UTC."""
+        if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
+            raise ValueError("updated_at must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected.")
+        return v.astimezone(timezone.utc)

@@ -10,6 +10,7 @@ requires-python = ">=3.14"
 dependencies = [
     "h3>=4.5.0",
     "pydantic>=2.13.5",
+    "pytest>=9.1.1",
 ]
 
 [project.scripts]
@@ -18,3 +19,7 @@ national-weather-intelligence = "national_weather_intelligence:main"
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+pythonpath = "."
+

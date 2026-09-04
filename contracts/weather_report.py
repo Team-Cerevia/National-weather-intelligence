@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -8,6 +8,14 @@ except ImportError:
     h3 = None
 
 DEFAULT_H3_RESOLUTION: int = 7
+# Indian Standard Time (IST) offset: UTC + 05:30
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def get_ist_now() -> datetime:
+    """Returns current datetime in Indian Standard Time (IST, UTC+5:30)."""
+    return datetime.now(IST)
+
 
 
 class MediaItem(BaseModel):

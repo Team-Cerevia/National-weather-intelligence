@@ -1,0 +1,19 @@
+{
+  "_comment": "REPRESENTATIVE MOCK SOURCE PAYLOAD: This fixture is a representative mock structure for the IMD Current Weather API (/api/v1/current_wx) based on documented conceptual fields, not an official captured network recording.",
+  "status": "success",
+  "data": [
+    {
+      "station_id": "42182",
+      "station": "New Delhi (Safdarjung)",
+      "obs_date": "2026-09-04",
+      "obs_time_utc": "10:00:00",
+      "temperature": 33.2,
+      "humidity": 70,
+      "wind_speed": 15.0,
+      "wind_direction": 110,
+      "rainfall_24h": 12.0,
+      "latitude": 28.584,
+      "longitude": 77.206
+    }
+  ]
+}

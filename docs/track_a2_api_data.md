@@ -6,9 +6,9 @@
 
 ---
 
-## 📌 Responsibility Boundary
+## Responsibility Boundary
 
-### ✅ What You Own
+### What You Own
 - **Open-Meteo Live API Adapter (`ingestion/adapters/api/open_meteo_adapter.py`):** Fetch real-time temperature, precipitation, and wind speeds.
 - **IMD Bulletin / Alert Adapter (`ingestion/adapters/api/imd_adapter.py`):** Parse official IMD warnings.
 - **Public Dataset Loader (`ingestion/adapters/api/dataset_adapter.py`):** Load historical/public CSV & JSON weather datasets.
@@ -17,14 +17,14 @@
 - **Test Fixtures & Replay (`ingestion/fixtures/synthetic_reports.json`).**
 - **Unit Tests (`ingestion/tests/test_api_data.py`).**
 
-### ❌ What You Do NOT Own
+### What You Do NOT Own
 - Social media scrapers or news RSS feeds (Track A1).
 - Redis streaming broker (Track B).
 - ML intelligence pipeline (Track C).
 
 ---
 
-## 🛠️ Data Contract Output
+## Data Contract Output
 
 Your adapters **MUST** return instances of `WeatherReport` imported from `contracts`:
 
@@ -47,7 +47,7 @@ report = WeatherReport(
 
 ---
 
-## 📂 File Checklist
+## File Checklist
 
 - `ingestion/adapters/api/__init__.py`
 - `ingestion/adapters/api/open_meteo_adapter.py`
@@ -60,7 +60,7 @@ report = WeatherReport(
 
 ---
 
-## ✅ Definition of Done
+## Definition of Done
 1. Adapters return valid `WeatherReport` objects with valid lat/lon and derived H3 cell res 7.
 2. `uv run ruff check .` and `uv run ruff format --check .` pass.
 3. `uv run pytest ingestion/tests/test_api_data.py` passes 100%.

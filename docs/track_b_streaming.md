@@ -6,9 +6,9 @@
 
 ---
 
-## 📌 Responsibility Boundary
+## Responsibility Boundary
 
-### ✅ What You Own
+### What You Own
 - **Stream Broker (`streaming/broker.py`):** Redis Streams connection manager with in-memory queue fallback.
 - **Stream Producer (`streaming/producer.py`):** Accepts `WeatherReport` objects, serializes them to JSON, and publishes to Redis Streams (`stream:weather_reports`).
 - **Stream Consumer (`streaming/consumer.py`):** Scalable Consumer Group worker with ACK handling.
@@ -16,14 +16,14 @@
 - **Replay Engine (`streaming/replay.py`):** Capability to replay past stream events from a specific point in time or message ID for reprocessing/testing.
 - **Unit Tests (`streaming/tests/test_streaming.py`).**
 
-### ❌ What You Do NOT Own
+### What You Do NOT Own
 - Ingestion adapters (Track A1 & Track A2).
 - NLP entity extraction or incident clustering (Track C).
 - Frontend visualization (Track D).
 
 ---
 
-## 🛠️ Data Contract Integration
+## Data Contract Integration
 
 The streaming pipeline **MUST** operate on canonical `WeatherReport` objects from `contracts`:
 
@@ -39,7 +39,7 @@ report = WeatherReport.model_validate_json(payload)
 
 ---
 
-## 📂 File Checklist
+## File Checklist
 
 - `streaming/__init__.py`
 - `streaming/broker.py`
@@ -51,7 +51,7 @@ report = WeatherReport.model_validate_json(payload)
 
 ---
 
-## ✅ Definition of Done
+## Definition of Done
 1. Producer publishes `WeatherReport` instances and Consumer deserializes them cleanly.
 2. Failed messages route to DLQ after max retries without crashing the worker.
 3. `uv run ruff check .` and `uv run ruff format --check .` pass.

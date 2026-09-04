@@ -6,23 +6,23 @@
 
 ---
 
-## 📌 Responsibility Boundary
+## Responsibility Boundary
 
-### ✅ What You Own
+### What You Own
 - **Social Media Scraper / Adapter (`ingestion/adapters/social/social_adapter.py`):** Extract weather posts, hashtags (`#IMD`, `#IndiaWeather`, `#Monsoon`), media URLs (photos/videos), and location text.
 - **News RSS Feed Adapter (`ingestion/adapters/social/news_rss_adapter.py`):** Fetch live weather articles and news alerts.
 - **Hashtag & Media Extractor (`ingestion/adapters/social/extractors.py`):** Parse hashtags, media links, and language codes.
 - **Test Fixtures (`ingestion/fixtures/social_posts.json`):** Mock social posts and news feeds for testing.
 - **Unit Tests (`ingestion/tests/test_social.py`):** Tests for social and news parsing.
 
-### ❌ What You Do NOT Own
+### What You Do NOT Own
 - Open-Meteo API / Citizen REST endpoint (Track A2).
 - Redis event streaming (Track B).
 - Incident clustering or NLP evidence processing (Track C).
 
 ---
 
-## 🛠️ Data Contract Output
+## Data Contract Output
 
 Your adapters **MUST** return instances of `WeatherReport` imported from `contracts`:
 
@@ -45,7 +45,7 @@ report = WeatherReport(
 
 ---
 
-## 📂 File Checklist
+## File Checklist
 
 - `ingestion/adapters/social/__init__.py`
 - `ingestion/adapters/social/social_adapter.py`
@@ -56,7 +56,7 @@ report = WeatherReport(
 
 ---
 
-## ✅ Definition of Done
+## Definition of Done
 1. Adapters return valid `WeatherReport` objects.
 2. `uv run ruff check .` and `uv run ruff format --check .` pass.
 3. `uv run pytest ingestion/tests/test_social.py` passes 100%.

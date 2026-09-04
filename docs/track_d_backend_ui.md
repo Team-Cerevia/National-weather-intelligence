@@ -6,9 +6,9 @@
 
 ---
 
-## 📌 Responsibility Boundary
+## Responsibility Boundary
 
-### ✅ What You Own
+### What You Own
 - **Database Schema (`backend/db/models.py`):** PostgreSQL + PostGIS + `pgvector` models for `Report`, `Incident`, `Evidence`, and `Timeline` (with SQLite fallback).
 - **FastAPI REST API (`backend/api/routes/`):**
   - `/incidents`: List/filter incidents by date, event category, location (city/state), severity, and verification status.
@@ -18,13 +18,13 @@
 
 ---
 
-## 🛠️ Data Contract Integration
+## Data Contract Integration
 
 Consumes `Incident` and `WeatherReport` contract objects from `contracts` to store in DB and render on the UI.
 
 ---
 
-## 📂 File Checklist
+## File Checklist
 
 - `backend/db/models.py`
 - `backend/db/session.py`
@@ -37,7 +37,7 @@ Consumes `Incident` and `WeatherReport` contract objects from `contracts` to sto
 
 ---
 
-## ✅ Definition of Done
+## Definition of Done
 1. Database migrations run cleanly.
 2. REST endpoints return valid JSON matching contract schemas.
 3. Leaflet map renders incidents and opens the Evidence Provenance Drawer on click.

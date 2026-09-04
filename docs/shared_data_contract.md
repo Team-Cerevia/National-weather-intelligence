@@ -1315,6 +1315,7 @@ Example structure:
 from datetime import datetime
 from pydantic import BaseModel, Field
 
+
 class WeatherReport(BaseModel):
     report_id: str
     source: str

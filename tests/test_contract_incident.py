@@ -287,4 +287,3 @@ def test_14_timezone_normalization():
     )
     assert incident.first_reported_at == datetime(2026, 9, 4, 10, 0, tzinfo=timezone.utc)
     assert incident.first_reported_at.tzinfo == timezone.utc
-

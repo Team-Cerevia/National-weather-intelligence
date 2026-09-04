@@ -126,9 +126,7 @@ class Incident(BaseModel):
         has_lat = self.latitude is not None
         has_lon = self.longitude is not None
         if has_lat != has_lon:
-            raise ValueError(
-                "Both latitude and longitude must be provided together. Partial coordinates are rejected."
-            )
+            raise ValueError("Both latitude and longitude must be provided together. Partial coordinates are rejected.")
 
         for cell in self.h3_cells:
             if not h3.is_valid_cell(cell):
@@ -145,4 +143,3 @@ class Incident(BaseModel):
             )
 
         return self
-

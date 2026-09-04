@@ -44,9 +44,7 @@ class OpenMeteoAdapter(BaseWeatherAdapter):
         # 3. Parse and map to canonical WeatherReport
         return self.parse_payload(payload=payload, requested_lat=latitude, requested_lon=longitude)
 
-    def parse_payload(
-        self, payload: dict[str, Any], requested_lat: float, requested_lon: float
-    ) -> WeatherReport:
+    def parse_payload(self, payload: dict[str, Any], requested_lat: float, requested_lon: float) -> WeatherReport:
         """Parses an official Open-Meteo JSON response payload into a canonical WeatherReport."""
         if not isinstance(payload, dict):
             raise IngestionError("Malformed Open-Meteo response: top-level JSON must be an object.")

@@ -161,3 +161,130 @@ def test_5_incident_serialization_deserialization():
     assert reconstructed.severity == IncidentSeverity.CRITICAL
     assert reconstructed.priority_score == 95.0
     assert reconstructed.city == "Delhi"
+
+
+def test_6_valid_h3_cells_accepted():
+    incident = Incident(
+        incident_id="inc_h3_valid",
+        title="Valid H3 Cells Test",
+        event_category="RAIN",
+        h3_cells=["873da1a93ffffff"],
+    )
+    assert incident.h3_cells == ["873da1a93ffffff"]
+
+
+def test_7_invalid_h3_cell_rejected():
+    with pytest.raises(ValidationError):
+        Incident(
+            incident_id="inc_h3_invalid",
+            title="Invalid H3 Cell Test",
+            event_category="RAIN",
+            h3_cells=["not_a_valid_h3_cell"],
+        )
+
+
+def test_8_wrong_h3_resolution_rejected():
+    with pytest.raises(ValidationError):
+        Incident(
+            incident_id="inc_h3_wrong_res",
+            title="Wrong H3 Res Test",
+            event_category="RAIN",
+            h3_cells=["863da1a97ffffff"],  # Resolution 6 cell
+        )
+
+
+def test_9_partial_coordinates_rejected():
+    with pytest.raises(ValidationError):
+        Incident(
+            incident_id="inc_partial_lat",
+            title="Partial Coords Test",
+            event_category="FLOOD",
+            latitude=28.627,
+            longitude=None,
+        )
+
+    with pytest.raises(ValidationError):
+        Incident(
+            incident_id="inc_partial_lon",
+            title="Partial Coords Test",
+            event_category="FLOOD",
+            latitude=None,
+            longitude=77.372,
+        )
+
+
+def test_10_both_coordinates_absent_accepted():
+    incident = Incident(
+        incident_id="inc_no_coords",
+        title="No Coords Test",
+        event_category="FOG",
+        latitude=None,
+        longitude=None,
+    )
+    assert incident.latitude is None
+    assert incident.longitude is None
+
+
+def test_11_both_coordinates_present_accepted():
+    incident = Incident(
+        incident_id="inc_with_coords",
+        title="With Coords Test",
+        event_category="CYCLONE",
+        latitude=13.0827,
+        longitude=80.2707,
+    )
+    assert incident.latitude == 13.0827
+    assert incident.longitude == 80.2707
+
+
+def test_12_invalid_temporal_ordering_rejected():
+    with pytest.raises(ValidationError):
+        Incident(
+            incident_id="inc_temporal_err",
+            title="Invalid Temporal Ordering Test",
+            event_category="HEATWAVE",
+            first_reported_at=datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc),
+            last_updated_at=datetime(2026, 9, 4, 10, 0, tzinfo=timezone.utc),  # earlier than first_reported_at
+        )
+
+
+def test_13_valid_temporal_ordering_accepted():
+    t1 = datetime(2026, 9, 4, 10, 0, tzinfo=timezone.utc)
+    t2 = datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc)
+    incident = Incident(
+        incident_id="inc_temporal_ok",
+        title="Valid Temporal Ordering Test",
+        event_category="HEATWAVE",
+        first_reported_at=t1,
+        last_updated_at=t2,
+    )
+    assert incident.first_reported_at == t1
+    assert incident.last_updated_at == t2
+
+
+def test_14_timezone_normalization():
+    # Naive datetime should be rejected
+    with pytest.raises(ValidationError):
+        Incident(
+            incident_id="inc_tz_naive",
+            title="Naive Time Test",
+            event_category="RAIN",
+            first_reported_at=datetime(2026, 9, 4, 10, 0),  # Naive
+        )
+
+    # IST datetime (UTC+5:30) should be normalized to UTC
+    from datetime import timedelta
+    from datetime import timezone as tz
+
+    ist = tz(timedelta(hours=5, minutes=30))
+    t_ist = datetime(2026, 9, 4, 15, 30, tzinfo=ist)
+    incident = Incident(
+        incident_id="inc_tz_ist",
+        title="IST Time Test",
+        event_category="RAIN",
+        first_reported_at=t_ist,
+        last_updated_at=t_ist,
+    )
+    assert incident.first_reported_at == datetime(2026, 9, 4, 10, 0, tzinfo=timezone.utc)
+    assert incident.first_reported_at.tzinfo == timezone.utc
+

@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+import h3
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .evidence import VerificationSummary
+from .weather_report import DEFAULT_H3_RESOLUTION
 
 
 class IncidentState(str, Enum):
@@ -113,3 +115,34 @@ class Incident(BaseModel):
                 "Datetimes must be timezone-aware (e.g. UTC or with explicit offset). Naive datetimes are rejected."
             )
         return v.astimezone(timezone.utc)
+
+    @model_validator(mode="after")
+    def validate_incident_invariants(self) -> "Incident":
+        """Enforces incident invariants:
+        1. Latitude and longitude must both be present or both absent.
+        2. Every h3_cells item must be a valid H3 cell with resolution == DEFAULT_H3_RESOLUTION (7).
+        3. first_reported_at must be <= last_updated_at.
+        """
+        has_lat = self.latitude is not None
+        has_lon = self.longitude is not None
+        if has_lat != has_lon:
+            raise ValueError(
+                "Both latitude and longitude must be provided together. Partial coordinates are rejected."
+            )
+
+        for cell in self.h3_cells:
+            if not h3.is_valid_cell(cell):
+                raise ValueError(f"Supplied h3_cell '{cell}' is not a valid H3 cell index.")
+            res = h3.get_resolution(cell)
+            if res != DEFAULT_H3_RESOLUTION:
+                raise ValueError(
+                    f"Supplied h3_cell '{cell}' has resolution {res}, but resolution {DEFAULT_H3_RESOLUTION} is required."
+                )
+
+        if self.last_updated_at < self.first_reported_at:
+            raise ValueError(
+                f"last_updated_at ({self.last_updated_at}) cannot be earlier than first_reported_at ({self.first_reported_at})."
+            )
+
+        return self
+

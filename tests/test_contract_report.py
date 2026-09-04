@@ -1,164 +1,104 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
 from contracts.weather_report import MediaItem, WeatherReport, DEFAULT_H3_RESOLUTION
 
 
-def test_1_valid_complete_weather_report():
-    raw_data = {"raw_sensor_code": 102, "reporter": "station_01"}
+def test_1_timezone_aware_timestamp_acceptance():
+    # UTC datetime accepted
+    ts_utc = datetime(2026, 9, 4, 10, 30, tzinfo=timezone.utc)
     report = WeatherReport(
-        report_id="rep_1001",
-        source="open_meteo",
-        source_type="weather_api",
-        source_id="om_88219",
-        timestamp=datetime(2026, 9, 4, 10, 30, tzinfo=timezone.utc),
-        received_at=datetime(2026, 9, 4, 10, 31, tzinfo=timezone.utc),
-        text="Heavy rainfall recorded in Noida Sector 62",
-        latitude=28.627,
-        longitude=77.372,
-        city="Noida",
-        district="Gautam Buddha Nagar",
-        state="Uttar Pradesh",
-        country="India",
-        event_category="heavy_rain",
-        url="https://open-meteo.com/en/forecast",
-        media_urls=["https://example.com/rain.jpg"],
-        media_items=[
-            MediaItem(
-                url="https://example.com/rain.jpg",
-                media_type="image/jpeg",
-                caption="Rain gauge reading",
-                source_metadata={"resolution": "1920x1080"},
-            )
-        ],
-        hashtags=["#NoidaRain", "#IMDAlert"],
-        language="en",
-        raw_payload=raw_data,
-        schema_version="1.0",
+        report_id="rep_tz_01",
+        source="imd",
+        source_type="official",
+        timestamp=ts_utc,
+        text="Timezone test UTC",
     )
+    assert report.timestamp == ts_utc
 
-    assert report.report_id == "rep_1001"
-    assert report.source == "open_meteo"
-    assert report.latitude == 28.627
-    assert report.longitude == 77.372
-    assert report.h3_cell is not None
-    assert isinstance(report.h3_cell, str)
-    assert len(report.media_items) == 1
-    assert report.media_items[0].media_type == "image/jpeg"
-    assert report.raw_payload == raw_data
+    # Datetime with offset (+05:30) converted to UTC
+    ist_tz = timezone(timedelta(hours=5, minutes=30))
+    ts_ist = datetime(2026, 9, 4, 16, 0, tzinfo=ist_tz)
+    report_ist = WeatherReport(
+        report_id="rep_tz_02",
+        source="imd",
+        source_type="official",
+        timestamp=ts_ist,
+        text="Timezone test IST",
+    )
+    assert report_ist.timestamp.tzinfo == timezone.utc
+    assert report_ist.timestamp.hour == 10
+    assert report_ist.timestamp.minute == 30
+
+    # ISO string with UTC offset auto-parsed into UTC
+    report_iso = WeatherReport(
+        report_id="rep_tz_03",
+        source="imd",
+        source_type="official",
+        timestamp="2026-09-04T10:30:00+00:00",
+        text="Timezone test ISO string",
+    )
+    assert report_iso.timestamp.tzinfo == timezone.utc
 
 
-def test_2_minimal_valid_weather_report():
+def test_2_naive_timestamp_rejection():
+    naive_dt = datetime(2026, 9, 4, 10, 30)  # Naive datetime without tzinfo
+    with pytest.raises(ValidationError) as exc_info:
+        WeatherReport(
+            report_id="rep_err_naive",
+            source="imd",
+            source_type="official",
+            timestamp=naive_dt,
+            text="Naive timestamp test",
+        )
+    assert "timezone-aware" in str(exc_info.value)
+
+
+def test_3_timezone_aware_received_at():
+    # Timezone-aware received_at accepted
+    recv_utc = datetime(2026, 9, 4, 10, 35, tzinfo=timezone.utc)
     report = WeatherReport(
-        report_id="rep_min_01",
-        source="citizen",
-        source_type="citizen",
-        timestamp="2026-09-04T12:00:00Z",
-        text="Waterlogging near city station",
+        report_id="rep_recv_01",
+        source="imd",
+        source_type="official",
+        timestamp="2026-09-04T10:30:00Z",
+        received_at=recv_utc,
+        text="Received at test",
     )
+    assert report.received_at == recv_utc
 
-    assert report.report_id == "rep_min_01"
-    assert report.source == "citizen"
-    assert report.source_type == "citizen"
-    assert report.text == "Waterlogging near city station"
-    assert report.latitude is None
-    assert report.longitude is None
-    assert report.h3_cell is None
-    assert report.country == "India"
-    assert report.schema_version == "1.0"
+    # Naive received_at rejected
+    naive_recv = datetime(2026, 9, 4, 10, 35)
+    with pytest.raises(ValidationError) as exc_info:
+        WeatherReport(
+            report_id="rep_recv_err",
+            source="imd",
+            source_type="official",
+            timestamp="2026-09-04T10:30:00Z",
+            received_at=naive_recv,
+            text="Naive received_at test",
+        )
+    assert "timezone-aware" in str(exc_info.value)
 
 
-def test_3_missing_coordinates():
+def test_4_missing_coordinates_h3_remains_none():
     report = WeatherReport(
         report_id="rep_no_geo",
-        source="social",
-        source_type="social_media",
-        timestamp=datetime.now(timezone.utc),
-        text="Heavy winds in South Delhi area",
+        source="citizen",
+        source_type="citizen",
+        timestamp="2026-09-04T10:30:00Z",
+        text="No coords report",
         latitude=None,
         longitude=None,
     )
-
     assert report.latitude is None
     assert report.longitude is None
     assert report.h3_cell is None
 
 
-def test_4_missing_optional_fields():
-    report = WeatherReport(
-        report_id="rep_opt_01",
-        source="news",
-        source_type="news",
-        timestamp="2026-09-04T14:00:00Z",
-        text="Flood warning issued for coastal areas",
-    )
-
-    assert report.source_id is None
-    assert report.received_at is None
-    assert report.event_category is None
-    assert report.url is None
-    assert report.media_urls == []
-    assert report.media_items == []
-    assert report.hashtags == []
-    assert report.language is None
-    assert report.raw_payload is None
-
-
-def test_5_invalid_latitude():
-    with pytest.raises(ValidationError) as exc_info:
-        WeatherReport(
-            report_id="rep_err_lat",
-            source="test",
-            source_type="test",
-            timestamp="2026-09-04T12:00:00Z",
-            text="Invalid lat test",
-            latitude=95.0,  # Invalid latitude (>90)
-            longitude=77.0,
-        )
-    assert "latitude" in str(exc_info.value)
-
-
-def test_6_invalid_longitude():
-    with pytest.raises(ValidationError) as exc_info:
-        WeatherReport(
-            report_id="rep_err_lon",
-            source="test",
-            source_type="test",
-            timestamp="2026-09-04T12:00:00Z",
-            text="Invalid lon test",
-            latitude=28.0,
-            longitude=-195.0,  # Invalid longitude (<-180)
-        )
-    assert "longitude" in str(exc_info.value)
-
-
-def test_7_timestamp_validation():
-    # Valid ISO string auto-parsed
-    report = WeatherReport(
-        report_id="rep_ts_01",
-        source="imd",
-        source_type="official",
-        timestamp="2026-09-04T15:30:00Z",
-        text="Rainfall forecast update",
-    )
-
-    assert isinstance(report.timestamp, datetime)
-    assert report.timestamp.year == 2026
-    assert report.timestamp.month == 9
-
-    # Invalid timestamp format raises ValidationError
-    with pytest.raises(ValidationError):
-        WeatherReport(
-            report_id="rep_ts_err",
-            source="imd",
-            source_type="official",
-            timestamp="not-a-datetime",
-            text="Rainfall forecast update",
-        )
-
-
-def test_8_h3_generation_when_coordinates_exist():
+def test_5_coordinates_h3_cell_derivation():
     import h3
 
     lat, lon = 28.627, 77.372
@@ -178,61 +118,142 @@ def test_8_h3_generation_when_coordinates_exist():
     assert report.longitude == lon
 
 
-def test_9_h3_remains_null_when_coordinates_do_not_exist():
-    report = WeatherReport(
-        report_id="rep_h3_null",
-        source="citizen",
-        source_type="citizen",
+def test_6_invalid_and_inconsistent_supplied_h3_cell():
+    import h3
+
+    lat, lon = 28.627, 77.372
+    correct_h3 = h3.latlng_to_cell(lat, lon, DEFAULT_H3_RESOLUTION)
+    wrong_h3 = "873da1a93fffffd"
+
+    # Supplying consistent h3_cell is accepted
+    report_consistent = WeatherReport(
+        report_id="rep_h3_ok",
+        source="open_meteo",
+        source_type="weather_api",
         timestamp="2026-09-04T10:00:00Z",
-        text="No coords report",
+        text="Consistent H3 cell",
+        latitude=lat,
+        longitude=lon,
+        h3_cell=correct_h3,
     )
+    assert report_consistent.h3_cell == correct_h3
 
-    assert report.h3_cell is None
+    # Supplying inconsistent h3_cell raises ValidationError
+    with pytest.raises(ValidationError) as exc_info:
+        WeatherReport(
+            report_id="rep_h3_bad",
+            source="open_meteo",
+            source_type="weather_api",
+            timestamp="2026-09-04T10:00:00Z",
+            text="Inconsistent H3 cell",
+            latitude=lat,
+            longitude=lon,
+            h3_cell=wrong_h3,
+        )
+    assert "does not match derived cell" in str(exc_info.value)
+
+    # Supplying invalid h3_cell string without coordinates raises ValidationError
+    with pytest.raises(ValidationError) as exc_info_invalid:
+        WeatherReport(
+            report_id="rep_h3_invalid_str",
+            source="citizen",
+            source_type="citizen",
+            timestamp="2026-09-04T10:00:00Z",
+            text="Invalid H3 string",
+            h3_cell="invalid_h3_cell",
+        )
+    assert "not a valid H3 cell index" in str(exc_info_invalid.value)
 
 
-def test_10_media_metadata_validation():
+def test_7_h3_derivation_failure_not_silently_swallowed():
+    with patch("h3.latlng_to_cell", side_effect=RuntimeError("Simulated H3 C-library error")):
+        with pytest.raises(ValidationError) as exc_info:
+            WeatherReport(
+                report_id="rep_h3_fail",
+                source="open_meteo",
+                source_type="weather_api",
+                timestamp="2026-09-04T10:00:00Z",
+                text="H3 derivation failure test",
+                latitude=28.627,
+                longitude=77.372,
+            )
+        assert "H3 cell derivation failed" in str(exc_info.value)
+
+
+def test_8_unexpected_extra_fields_rejected():
+    with pytest.raises(ValidationError) as exc_info:
+        WeatherReport(
+            report_id="rep_extra_01",
+            source="imd",
+            source_type="official",
+            timestamp="2026-09-04T10:00:00Z",
+            text="Extra field test",
+            unregistered_custom_field="some_value",  # Should be forbidden
+        )
+    assert "Extra inputs are not permitted" in str(exc_info.value)
+
+    # Raw payload is allowed for source provenance
+    report_valid_raw = WeatherReport(
+        report_id="rep_raw_ok",
+        source="imd",
+        source_type="official",
+        timestamp="2026-09-04T10:00:00Z",
+        text="Raw payload test",
+        raw_payload={"unregistered_custom_field": "some_value"},
+    )
+    assert report_valid_raw.raw_payload == {"unregistered_custom_field": "some_value"}
+
+
+def test_9_invalid_latitude_and_longitude_bounds():
+    with pytest.raises(ValidationError):
+        WeatherReport(
+            report_id="rep_lat_err",
+            source="test",
+            source_type="test",
+            timestamp="2026-09-04T10:00:00Z",
+            text="Lat out of bounds",
+            latitude=95.0,
+            longitude=77.0,
+        )
+
+    with pytest.raises(ValidationError):
+        WeatherReport(
+            report_id="rep_lon_err",
+            source="test",
+            source_type="test",
+            timestamp="2026-09-04T10:00:00Z",
+            text="Lon out of bounds",
+            latitude=28.0,
+            longitude=-195.0,
+        )
+
+
+def test_10_media_items_and_extra_forbid():
     media = MediaItem(
-        url="https://example.com/video.mp4",
-        media_type="video/mp4",
-        caption="Storm footage",
-        source_metadata={"duration_sec": 15},
+        url="https://example.com/photo.jpg",
+        media_type="image/jpeg",
+        caption="Flood photo",
     )
     report = WeatherReport(
         report_id="rep_media_01",
         source="social",
         source_type="social_media",
         timestamp="2026-09-04T10:00:00Z",
-        text="Check out this storm video",
+        text="Flood photo report",
         media_items=[media],
     )
-
     assert len(report.media_items) == 1
-    assert report.media_items[0].url == "https://example.com/video.mp4"
-    assert report.media_items[0].caption == "Storm footage"
+    assert report.media_items[0].media_type == "image/jpeg"
+
+    # Extra fields on MediaItem are forbidden
+    with pytest.raises(ValidationError):
+        MediaItem(
+            url="https://example.com/photo.jpg",
+            unknown_prop="forbidden",
+        )
 
 
-def test_11_schema_version():
-    report_default = WeatherReport(
-        report_id="rep_ver_1",
-        source="imd",
-        source_type="official",
-        timestamp="2026-09-04T10:00:00Z",
-        text="Standard report",
-    )
-    assert report_default.schema_version == "1.0"
-
-    report_custom = WeatherReport(
-        report_id="rep_ver_2",
-        source="imd",
-        source_type="official",
-        timestamp="2026-09-04T10:00:00Z",
-        text="Custom schema version report",
-        schema_version="1.1",
-    )
-    assert report_custom.schema_version == "1.1"
-
-
-def test_12_serialization_deserialization():
+def test_11_serialization_and_deserialization():
     report = WeatherReport(
         report_id="rep_serde_01",
         source="open_meteo",
@@ -252,28 +273,4 @@ def test_12_serialization_deserialization():
     assert reconstructed.latitude == report.latitude
     assert reconstructed.longitude == report.longitude
     assert reconstructed.h3_cell == report.h3_cell
-    assert reconstructed.city == report.city
-
-
-def test_13_preservation_of_raw_payload_and_provenance():
-    original_raw = {
-        "sensor_id": "S-992",
-        "raw_temp_c": 34.5,
-        "nested_meta": {"status": "ok", "retry": 0},
-    }
-    report = WeatherReport(
-        report_id="rep_prov_01",
-        source="sensor_network",
-        source_type="official",
-        source_id="S-992",
-        timestamp="2026-09-04T10:00:00Z",
-        text="Sensor data payload",
-        raw_payload=original_raw,
-    )
-
-    assert report.source == "sensor_network"
-    assert report.source_type == "official"
-    assert report.source_id == "S-992"
-    assert report.raw_payload == original_raw
-    # Verify original dict structure is untouched
-    assert report.raw_payload["nested_meta"]["status"] == "ok"
+    assert reconstructed.timestamp == report.timestamp

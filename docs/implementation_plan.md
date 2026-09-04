@@ -52,6 +52,18 @@ Social & News      APIs & Data     Streaming     Intelligence      Backend & UI
 
 ---
 
+## Environment & Credential Security Guidelines
+
+1. **Never Commit Secrets or API Keys:** Hardcoding API keys, passwords, database credentials, or tokens in source code is strictly forbidden.
+2. **Use `.env` for Local Secrets:** Create a `.env` file locally by copying `.env.example` in the project root:
+   ```bash
+   cp .env.example .env
+   ```
+3. **`.gitignore` Enforcement:** The `.env` file and all variations (`.env.*`, `.env.local`) are explicitly gitignored. Verify `git status` before committing to ensure no credentials are staged.
+4. **Accessing Variables in Python:** Use `os.getenv()` or `pydantic-settings` to load configuration from environment variables.
+
+---
+
 ## Integration Flow
 
 ```text

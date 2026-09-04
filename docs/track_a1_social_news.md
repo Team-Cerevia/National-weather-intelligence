@@ -22,6 +22,13 @@
 
 ---
 
+## Environment & Security (.env)
+
+- **API Keys & Tokens:** If using optional social media API bearer tokens or news RSS access keys, store them in `.env` (copy from `.env.example`).
+- **Git Safety:** NEVER hardcode API keys or credentials in code. `.env` is gitignored. Always read credentials via environment variables (`os.getenv()`).
+
+---
+
 ## Data Contract Output
 
 Your adapters **MUST** return instances of `WeatherReport` imported from `contracts`:

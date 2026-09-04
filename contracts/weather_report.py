@@ -77,17 +77,32 @@ class WeatherReport(BaseModel):
 
     @model_validator(mode="after")
     def validate_and_compute_h3(self) -> "WeatherReport":
-        """Derives H3 spatial cell index if coordinates exist or validates consistency if h3_cell is supplied.
-
-        Does not silently swallow H3 calculation failures.
+        """Enforces canonical H3 derived index invariants:
+        1. lat/lon present + h3_cell absent -> auto-derive h3_cell.
+        2. lat/lon present + h3_cell present -> validate valid cell, resolution == DEFAULT_H3_RESOLUTION, and exact match with derived cell.
+        3. lat/lon absent + h3_cell present -> REJECT (standalone h3_cell forbidden).
+        4. lat/lon absent + h3_cell absent -> accept.
         """
-        if self.latitude is not None and self.longitude is not None:
+        has_coords = self.latitude is not None and self.longitude is not None
+        partial_coords = (self.latitude is None) != (self.longitude is None)
+
+        if partial_coords:
+            raise ValueError("Both latitude and longitude must be provided together.")
+
+        if has_coords:
             try:
                 derived_h3 = h3.latlng_to_cell(self.latitude, self.longitude, DEFAULT_H3_RESOLUTION)
             except Exception as e:
                 raise ValueError(f"H3 cell derivation failed for lat={self.latitude}, lon={self.longitude}: {e}") from e
 
             if self.h3_cell is not None:
+                if not h3.is_valid_cell(self.h3_cell):
+                    raise ValueError(f"Supplied h3_cell '{self.h3_cell}' is not a valid H3 cell index.")
+                if h3.get_resolution(self.h3_cell) != DEFAULT_H3_RESOLUTION:
+                    raise ValueError(
+                        f"Supplied h3_cell '{self.h3_cell}' has resolution {h3.get_resolution(self.h3_cell)}, "
+                        f"but resolution {DEFAULT_H3_RESOLUTION} is required."
+                    )
                 if self.h3_cell != derived_h3:
                     raise ValueError(
                         f"Supplied h3_cell '{self.h3_cell}' does not match derived cell '{derived_h3}' "
@@ -96,6 +111,6 @@ class WeatherReport(BaseModel):
             else:
                 self.h3_cell = derived_h3
         elif self.h3_cell is not None:
-            if not h3.is_valid_cell(self.h3_cell):
-                raise ValueError(f"Supplied h3_cell '{self.h3_cell}' is not a valid H3 cell index.")
+            raise ValueError("Standalone h3_cell without coordinates is forbidden. h3_cell is a derived field.")
+
         return self

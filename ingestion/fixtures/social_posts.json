@@ -1,0 +1,204 @@
+{
+  "social_posts": [
+    {
+      "post_id": "soc_post_1001",
+      "author": "noida_traffic_watch",
+      "created_at": "2026-09-04T08:15:00Z",
+      "text": "Heavy waterlogging near Noida Sector 62 Fortis underpass after intense morning rainfall. Traffic diverted! #NoidaRain #IMD #Waterlogging #Monsoon2026",
+      "hashtags": [
+        "#NoidaRain",
+        "#IMD",
+        "#Waterlogging",
+        "#Monsoon2026"
+      ],
+      "media_urls": [
+        "https://example.com/weather/noida-waterlogging-01.jpg",
+        "https://example.com/weather/noida-waterlogging-02.jpg"
+      ],
+      "city": "Noida",
+      "district": "Gautam Buddha Nagar",
+      "state": "Uttar Pradesh",
+      "country": "India",
+      "latitude": 28.627,
+      "longitude": 77.372,
+      "language": "en",
+      "url": "https://example.com/social/status/soc_post_1001"
+    },
+    {
+      "post_id": "soc_post_1002",
+      "author": "mumbai_monsoon_updates",
+      "created_at": "2026-09-04T09:30:00Z",
+      "text": "Suburban train services delayed by 20 mins at Dadar station due to high tide and heavy downpour. #MumbaiRains #IMD #FloodAlert",
+      "hashtags": [
+        "#MumbaiRains",
+        "#IMD",
+        "#FloodAlert"
+      ],
+      "media_urls": [
+        "https://example.com/weather/mumbai-train-delay.mp4"
+      ],
+      "city": "Mumbai",
+      "district": "Mumbai City",
+      "state": "Maharashtra",
+      "country": "India",
+      "latitude": 19.017,
+      "longitude": 72.847,
+      "language": "en",
+      "url": "https://example.com/social/status/soc_post_1002"
+    },
+    {
+      "post_id": "soc_post_1003",
+      "author": "delhi_samachar",
+      "created_at": "2026-09-04T10:00:00Z",
+      "text": "दिल्ली में आज सुबह से भारी बारिश और आईटीओ पर भयंकर जलभराव की स्थिति बनी हुई है। #DelhiRain #Monsoon #IMD",
+      "hashtags": [
+        "#DelhiRain",
+        "#Monsoon",
+        "#IMD"
+      ],
+      "media_urls": [
+        "https://example.com/weather/delhi-ito-rain.jpg"
+      ],
+      "city": "New Delhi",
+      "district": "Central Delhi",
+      "state": "Delhi",
+      "country": "India",
+      "language": "hi",
+      "url": "https://example.com/social/status/soc_post_1003"
+    },
+    {
+      "post_id": "soc_post_1004",
+      "author": "gurugram_commuter",
+      "created_at": "2026-09-04T10:45:00Z",
+      "text": "Gurugram Cyber City mein bahut tez baarish ho rahi hai, roads par paani bhar gaya hai. #GurugramRain #Monsoon",
+      "hashtags": [
+        "#GurugramRain",
+        "#Monsoon"
+      ],
+      "city": "Gurugram",
+      "state": "Haryana",
+      "country": "India",
+      "language": "hinglish",
+      "url": "https://example.com/social/status/soc_post_1004"
+    },
+    {
+      "post_id": "soc_post_1005",
+      "author": "jaipur_wx_station",
+      "created_at": "2026-09-04T11:20:00Z",
+      "text": "Severe thunderstorm and lightning strikes reported across Pink City Jaipur. Stay indoors! #JaipurThunderstorm #StormAlert",
+      "hashtags": [
+        "#JaipurThunderstorm",
+        "#StormAlert"
+      ],
+      "city": "Jaipur",
+      "state": "Rajasthan",
+      "country": "India",
+      "latitude": 26.912,
+      "longitude": 75.787,
+      "language": "en",
+      "url": "https://example.com/social/status/soc_post_1005"
+    },
+    {
+      "post_id": "soc_post_1006",
+      "author": "rajasthan_heat_bulletin",
+      "created_at": "2026-09-04T12:00:00Z",
+      "text": "Extreme heatwave warning in Barmer as maximum temperature touches 46.5°C today. #Heatwave #IMDAlert",
+      "hashtags": [
+        "#Heatwave",
+        "#IMDAlert"
+      ],
+      "city": "Barmer",
+      "state": "Rajasthan",
+      "country": "India",
+      "language": "en",
+      "url": "https://example.com/social/status/soc_post_1006"
+    },
+    {
+      "post_id": "soc_post_1007",
+      "author": "amritsar_morning",
+      "created_at": "2026-09-04T05:30:00Z",
+      "text": "Dense fog reducing visibility to under 50 meters on GT Road Amritsar this morning. #FogWarning #NorthIndia",
+      "hashtags": [
+        "#FogWarning",
+        "#NorthIndia"
+      ],
+      "city": "Amritsar",
+      "state": "Punjab",
+      "country": "India",
+      "language": "en",
+      "url": "https://example.com/social/status/soc_post_1007"
+    },
+    {
+      "post_id": "soc_post_1008",
+      "author": "coastal_odisha_alerts",
+      "created_at": "2026-09-04T13:10:00Z",
+      "text": "Gale-force strong winds gusts up to 85 km/h along Puri coast as deep depression approaches. #CycloneAlert #OdishaWeather",
+      "hashtags": [
+        "#CycloneAlert",
+        "#OdishaWeather"
+      ],
+      "media_urls": [
+        "https://example.com/weather/puri-coast-gale.mp4"
+      ],
+      "city": "Puri",
+      "state": "Odisha",
+      "country": "India",
+      "latitude": 19.813,
+      "longitude": 85.831,
+      "language": "en",
+      "url": "https://example.com/social/status/soc_post_1008"
+    },
+    {
+      "post_id": "soc_post_1009",
+      "author": "kerala_monsoon_track",
+      "created_at": "2026-09-04T14:00:00Z",
+      "text": "Continuous monsoon downpour causing river water levels to rise in Wayanad district. #KeralaRain #Monsoon2026",
+      "hashtags": [
+        "#KeralaRain",
+        "#Monsoon2026"
+      ],
+      "city": "Wayanad",
+      "state": "Kerala",
+      "country": "India",
+      "language": "en"
+    },
+    {
+      "post_id": "soc_post_1010",
+      "author": "citizen_reporter_xyz",
+      "created_at": "2026-09-04T15:00:00Z",
+      "text": "Heavy rain and hail storm hit near Highway 44. Watch out! #Hailstorm https://example.com/weather/hail-storm-hwy.jpg",
+      "media_urls": [
+        "https://example.com/weather/hail-storm-hwy.jpg"
+      ]
+    }
+  ],
+  "news_items": [
+    {
+      "guid": "news_article_99812",
+      "title": "IMD issues Red Alert for extreme rainfall across coastal Maharashtra",
+      "description": "The India Meteorological Department has issued a red alert for Mumbai, Thane, and Palghar districts following continuous heavy rainfall.",
+      "link": "https://weather-news.example.com/articles/imd-red-alert-maharashtra",
+      "pubDate": "Fri, 04 Sep 2026 09:30:00 GMT",
+      "city": "Mumbai",
+      "state": "Maharashtra"
+    },
+    {
+      "guid": "news_article_99814",
+      "title": "Severe Heatwave Conditions Persist Across Western Rajasthan",
+      "description": "Temperatures cross 45°C in several districts of Rajasthan with severe heatwave warnings issued by weather authorities.",
+      "link": "https://weather-news.example.com/articles/rajasthan-heatwave-warning",
+      "pubDate": "Fri, 04 Sep 2026 11:00:00 GMT",
+      "city": "Barmer",
+      "state": "Rajasthan"
+    },
+    {
+      "guid": "news_article_99815",
+      "title": "Urban Waterlogging Disrupts Commute in NCR After Heavy Downpour",
+      "description": "Submerged arterial roads in Noida and Gurugram create massive morning traffic jams following 80mm rainfall in 3 hours.",
+      "link": "https://weather-news.example.com/articles/ncr-waterlogging-delhi-noida",
+      "pubDate": "Fri, 04 Sep 2026 12:30:00 GMT",
+      "city": "Noida",
+      "state": "Uttar Pradesh"
+    }
+  ]
+}

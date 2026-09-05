@@ -1,7 +1,8 @@
 # Track A2: Weather APIs, Public Datasets & Citizen Ingestion
 
+> **Status:** **COMPLETED & MERGED TO MAIN**  
 > **Owner:** Teammate A2  
-> **Branch:** `feat/data-ingestion-api`  
+> **Branch:** `main` (Merged PR #3)  
 > **Goal:** Build Open-Meteo API, IMD official bulletin, public dataset (CSV/JSON), and citizen report adapters that output canonical `WeatherReport` contract objects.
 
 ---

@@ -42,13 +42,14 @@ Social & News      APIs & Data     Streaming     Intelligence      Backend & UI
 
 ## Master Track Summary
 
-| Track | Owner | Branch | Core Responsibility | Guide |
+| Track | Owner | Status / Branch | Core Responsibility | Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| **Track A1** | Teammate A1 | `feat/data-ingestion-social` | Social Media (#IMD, hashtags), News RSS feeds, Media extractors | [`docs/track_a1_social_news.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_a1_social_news.md) |
-| **Track A2** | Teammate A2 | `feat/data-ingestion-api` | Open-Meteo API, IMD Data, Public CSVs, Citizen REST ingest | [`docs/track_a2_api_data.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_a2_api_data.md) |
-| **Track B** | Teammate B | `feat/streaming` | Redis Streams broker, Producer, Consumer Groups, Retry/DLQ, Replay | [`docs/track_b_streaming.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_b_streaming.md) |
-| **Track C** | YOU (AI Lead) | `feat/intelligence` | Pre-trained NLP, Incident Clustering, Evidence Verification, Evolution | [`docs/track_c_intelligence.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_c_intelligence.md) |
-| **Track D** | Teammate C | `feat/backend-foundation` | PostgreSQL + PostGIS, FastAPI REST, WebSockets, Leaflet GIS Map | [`docs/track_d_backend_ui.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_d_backend_ui.md) |
+| **Track A1** | Teammate A1 | 🔄 `feat/data-ingestion-social` | Social Media (#IMD, hashtags), News RSS feeds, Media extractors | [`docs/track_a1_social_news.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_a1_social_news.md) |
+| **Track A2** | Teammate A2 | ✅ **DONE** (`main`) | Open-Meteo API, IMD Data, Public CSVs, Citizen REST ingest | [`docs/track_a2_api_data.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_a2_api_data.md) |
+| **Track B** | Teammate B | 🔄 `feat/streaming` | Redis Streams broker, Producer, Consumer Groups, Retry/DLQ, Replay | [`docs/track_b_streaming.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_b_streaming.md) |
+| **Track C** | YOU (AI Lead) | 🔄 `feat/intelligence` | Pre-trained NLP, Incident Clustering, Evidence Verification, Evolution | [`docs/track_c_intelligence.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_c_intelligence.md) |
+| **Track D1** | Teammate C | 🔄 `feat/backend-foundation` | PostgreSQL + PostGIS, Docker Compose, FastAPI REST & WebSockets | [`docs/track_d1_backend.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_d1_backend.md) |
+| **Track D2** | Frontend/UI | 🔄 `feat/frontend-dashboard` | Leaflet GIS India Map, Filters & Evidence Provenance Drawer UI | [`docs/track_d2_frontend.md`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_d2_frontend.md) |
 
 ---
 

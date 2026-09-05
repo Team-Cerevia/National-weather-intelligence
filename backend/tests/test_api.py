@@ -36,9 +36,7 @@ def clean_database():
     """Clean all tables between tests to ensure complete test isolation."""
     with engine.begin() as conn:
         conn.execute(
-            text(
-                "TRUNCATE TABLE incident_timeline, evidence_items, incidents, reports RESTART IDENTITY CASCADE;"
-            )
+            text("TRUNCATE TABLE incident_timeline, evidence_items, incidents, reports RESTART IDENTITY CASCADE;")
         )
     yield
 
@@ -478,18 +476,14 @@ def test_evidence_reconciliation_and_deduplication(client: TestClient):
     # 1. First POST: E1 created
     client.post("/api/v1/incidents", json=incident.model_dump(mode="json"))
     with SessionLocal() as session:
-        inc = session.execute(
-            select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")
-        ).scalar_one()
+        inc = session.execute(select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")).scalar_one()
         assert len(inc.evidence_items) == 1
         assert inc.evidence_items[0].evidence_id == "ev_aud_01"
 
     # 2. Re-POST identical incident: E1 exists exactly once
     client.post("/api/v1/incidents", json=incident.model_dump(mode="json"))
     with SessionLocal() as session:
-        inc = session.execute(
-            select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")
-        ).scalar_one()
+        inc = session.execute(select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")).scalar_one()
         assert len(inc.evidence_items) == 1
 
     # 3. Add E2 and re-POST: Both E1 and E2 exist
@@ -508,9 +502,7 @@ def test_evidence_reconciliation_and_deduplication(client: TestClient):
     client.post("/api/v1/incidents", json=incident.model_dump(mode="json"))
 
     with SessionLocal() as session:
-        inc = session.execute(
-            select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")
-        ).scalar_one()
+        inc = session.execute(select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")).scalar_one()
         assert len(inc.evidence_items) == 2
         ev_ids = {e.evidence_id for e in inc.evidence_items}
         assert ev_ids == {"ev_aud_01", "ev_aud_02"}
@@ -521,9 +513,7 @@ def test_evidence_reconciliation_and_deduplication(client: TestClient):
     client.post("/api/v1/incidents", json=incident.model_dump(mode="json"))
 
     with SessionLocal() as session:
-        inc = session.execute(
-            select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")
-        ).scalar_one()
+        inc = session.execute(select(IncidentModel).where(IncidentModel.incident_id == "inc_audit_ev_01")).scalar_one()
         assert len(inc.evidence_items) == 1
         assert inc.evidence_items[0].evidence_id == "ev_aud_02"
 
@@ -631,4 +621,3 @@ def test_transaction_rollback_prevents_partial_persistence(client: TestClient):
 
         assert inc_row is None
         assert ev_row is None
-

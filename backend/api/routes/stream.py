@@ -54,7 +54,11 @@ class ConnectionManager:
                 for dead in dead_clients:
                     if dead in self.active_connections:
                         self.active_connections.remove(dead)
-            logger.info("Pruned %d dead WebSocket client(s). Active connections: %d", len(dead_clients), len(self.active_connections))
+            logger.info(
+                "Pruned %d dead WebSocket client(s). Active connections: %d",
+                len(dead_clients),
+                len(self.active_connections),
+            )
 
 
 # Global singleton connection manager for incident stream

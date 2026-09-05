@@ -29,9 +29,7 @@ def ingest_report(
 ) -> WeatherReport:
     """Persist or update a canonical weather report."""
     try:
-        existing = db.execute(
-            select(ReportModel).where(ReportModel.report_id == report.report_id)
-        ).scalar_one_or_none()
+        existing = db.execute(select(ReportModel).where(ReportModel.report_id == report.report_id)).scalar_one_or_none()
 
         if existing is None:
             new_model = ReportModel.from_contract(report)

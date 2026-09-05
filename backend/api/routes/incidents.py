@@ -245,15 +245,9 @@ def upsert_incident(
 
         existing.title = incident.title
         existing.event_category = incident.event_category
-        existing.state = (
-            incident.state.value
-            if isinstance(incident.state, IncidentState)
-            else str(incident.state)
-        )
+        existing.state = incident.state.value if isinstance(incident.state, IncidentState) else str(incident.state)
         existing.severity = (
-            incident.severity.value
-            if isinstance(incident.severity, IncidentSeverity)
-            else str(incident.severity)
+            incident.severity.value if isinstance(incident.severity, IncidentSeverity) else str(incident.severity)
         )
         existing.priority_score = incident.priority_score
         existing.latitude = incident.latitude

@@ -31,9 +31,7 @@ async def lifespan(app: FastAPI):
 
     # Launch background Redis subscriber task
     stop_event = asyncio.Event()
-    subscriber_task = asyncio.create_task(
-        redis_subscriber_task(manager=stream_manager, stop_event=stop_event)
-    )
+    subscriber_task = asyncio.create_task(redis_subscriber_task(manager=stream_manager, stop_event=stop_event))
     app.state.redis_stop_event = stop_event
     app.state.redis_subscriber_task = subscriber_task
     logger.info("Redis incident update subscriber task started.")

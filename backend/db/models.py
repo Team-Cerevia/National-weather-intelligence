@@ -180,9 +180,7 @@ class IncidentModel(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     event_category: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
 
-    state: Mapped[str] = mapped_column(
-        String(32), nullable=False, default=IncidentState.REPORTED.value, index=True
-    )
+    state: Mapped[str] = mapped_column(String(32), nullable=False, default=IncidentState.REPORTED.value, index=True)
     severity: Mapped[str] = mapped_column(
         String(32), nullable=False, default=IncidentSeverity.MODERATE.value, index=True
     )
@@ -253,9 +251,7 @@ class IncidentModel(Base):
             event_category=incident.event_category,
             state=incident.state.value if isinstance(incident.state, IncidentState) else str(incident.state),
             severity=(
-                incident.severity.value
-                if isinstance(incident.severity, IncidentSeverity)
-                else str(incident.severity)
+                incident.severity.value if isinstance(incident.severity, IncidentSeverity) else str(incident.severity)
             ),
             priority_score=incident.priority_score,
             latitude=incident.latitude,
@@ -293,8 +289,7 @@ class IncidentModel(Base):
 
         if incident.timeline:
             model.timeline = [
-                IncidentTimelineModel.from_contract(t, incident_id=incident.incident_id)
-                for t in incident.timeline
+                IncidentTimelineModel.from_contract(t, incident_id=incident.incident_id) for t in incident.timeline
             ]
 
         return model
@@ -312,8 +307,7 @@ class IncidentModel(Base):
                 supporting_sources=self.supporting_sources or [],
                 contradicting_sources=self.contradicting_sources or [],
                 evidence_items=evidence_contracts,
-                explanation=self.verification_explanation
-                or "Insufficient multi-source evidence to verify incident.",
+                explanation=self.verification_explanation or "Insufficient multi-source evidence to verify incident.",
                 updated_at=self.verification_updated_at or self.last_updated_at,
             )
 
@@ -373,17 +367,13 @@ class EvidenceItemModel(Base):
     incident: Mapped["IncidentModel"] = orm_relationship("IncidentModel", back_populates="evidence_items")
     report: Mapped["ReportModel | None"] = orm_relationship("ReportModel", back_populates="evidence_items")
 
-    __table_args__ = (
-        Index("idx_evidence_incident_rel", "incident_id", "relationship"),
-    )
+    __table_args__ = (Index("idx_evidence_incident_rel", "incident_id", "relationship"),)
 
     @classmethod
     def from_contract(cls, item: EvidenceItem, incident_id: str) -> "EvidenceItemModel":
         """Instantiate EvidenceItemModel from canonical EvidenceItem contract."""
         rel_str = (
-            item.relationship.value
-            if isinstance(item.relationship, EvidenceRelationship)
-            else str(item.relationship)
+            item.relationship.value if isinstance(item.relationship, EvidenceRelationship) else str(item.relationship)
         )
         return cls(
             evidence_id=item.evidence_id,
@@ -445,25 +435,21 @@ class IncidentTimelineModel(Base):
     incident: Mapped["IncidentModel"] = orm_relationship("IncidentModel", back_populates="timeline")
     report: Mapped["ReportModel | None"] = orm_relationship("ReportModel")
 
-    __table_args__ = (
-        Index("idx_timeline_incident_time", "incident_id", "timestamp"),
-    )
+    __table_args__ = (Index("idx_timeline_incident_time", "incident_id", "timestamp"),)
 
     @classmethod
     def from_contract(cls, entry: IncidentTimeline, incident_id: str) -> "IncidentTimelineModel":
         """Instantiate IncidentTimelineModel from canonical IncidentTimeline contract."""
-        prev_st = entry.previous_state.value if isinstance(entry.previous_state, IncidentState) else entry.previous_state
+        prev_st = (
+            entry.previous_state.value if isinstance(entry.previous_state, IncidentState) else entry.previous_state
+        )
         new_st = entry.new_state.value if isinstance(entry.new_state, IncidentState) else entry.new_state
         prev_sev = (
             entry.previous_severity.value
             if isinstance(entry.previous_severity, IncidentSeverity)
             else entry.previous_severity
         )
-        new_sev = (
-            entry.new_severity.value
-            if isinstance(entry.new_severity, IncidentSeverity)
-            else entry.new_severity
-        )
+        new_sev = entry.new_severity.value if isinstance(entry.new_severity, IncidentSeverity) else entry.new_severity
 
         return cls(
             incident_id=incident_id,

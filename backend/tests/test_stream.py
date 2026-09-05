@@ -166,8 +166,9 @@ def test_redis_publish_occurs_after_successful_commit(client: TestClient):
     def tracked_publish(inc):
         call_order.append("redis_publish")
 
-    with patch.object(Session, "commit", tracked_commit), patch(
-        "backend.api.routes.incidents.publish_incident_update", side_effect=tracked_publish
+    with (
+        patch.object(Session, "commit", tracked_commit),
+        patch("backend.api.routes.incidents.publish_incident_update", side_effect=tracked_publish),
     ):
         resp = client.post("/api/v1/incidents", json=incident.model_dump(mode="json"))
         assert resp.status_code == 201
@@ -180,9 +181,10 @@ def test_no_redis_publish_on_database_rollback(client: TestClient):
     """When a database transaction fails and rolls back, NO Redis event is published."""
     incident = _make_sample_incident("inc_rollback_test_01")
 
-    with patch("sqlalchemy.orm.Session.commit", side_effect=RuntimeError("Simulated DB failure")), patch(
-        "backend.api.routes.incidents.publish_incident_update"
-    ) as mock_publish:
+    with (
+        patch("sqlalchemy.orm.Session.commit", side_effect=RuntimeError("Simulated DB failure")),
+        patch("backend.api.routes.incidents.publish_incident_update") as mock_publish,
+    ):
         resp = client.post("/api/v1/incidents", json=incident.model_dump(mode="json"))
         assert resp.status_code == 500
         # Critical invariant: NEVER publish when commit fails
@@ -280,4 +282,3 @@ def test_end_to_end_post_incident_redis_websocket_broadcast(client: TestClient):
         assert event["event"] == "incident.updated"
         assert event["incident_id"] == "inc_e2e_stream_01"
         assert event["incident"]["title"] == incident.title
-

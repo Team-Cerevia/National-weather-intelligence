@@ -23,20 +23,55 @@ class SocialAdapter(BaseWeatherAdapter):
     def fetch_and_parse(
         self, posts: list[dict[str, Any]] | dict[str, Any] | None = None, **kwargs: Any
     ) -> list[WeatherReport]:
-        """Fetches raw social media posts from input parameters or mock payloads and parses them.
-
-        Args:
-            posts: Single post dictionary or list of post dictionaries.
-            **kwargs: Additional parameters (e.g. raw_posts).
-
-        Returns:
-            List of validated canonical WeatherReport instances.
-        """
+        """Fetches raw social media posts from input parameters, Mastodon live hashtags, or mock payloads."""
         raw_data = posts if posts is not None else kwargs.get("raw_posts")
-        if raw_data is None:
-            return []
+        if raw_data is not None:
+            return self.parse_payload(raw_data)
 
-        return self.parse_payload(raw_data)
+        # Live OSINT fetching from Mastodon public APIs if no direct payload is provided
+        hashtags = kwargs.get("hashtags") or ["indiaweather", "monsoon", "weatheralert"]
+        live_posts = self.fetch_mastodon_hashtags(hashtags)
+        return self.parse_payload(live_posts)
+
+    def fetch_mastodon_hashtags(self, hashtags: list[str]) -> list[dict[str, Any]]:
+        """Fetches live weather OSINT posts from public Mastodon instances without requiring API keys."""
+        import json
+        import re
+        import urllib.request
+        from datetime import datetime, timezone
+
+        posts: list[dict[str, Any]] = []
+        headers = {"User-Agent": "WeatherIntelligencePlatform/1.0"}
+
+        for tag in hashtags:
+            clean_tag = tag.lstrip("#").strip().lower()
+            url = f"https://mastodon.social/api/v1/timelines/tag/{clean_tag}"
+            try:
+                req = urllib.request.Request(url, headers=headers)
+                with urllib.request.urlopen(req, timeout=5) as res:
+                    items = json.loads(res.read().decode("utf-8"))
+                    for item in items:
+                        content_raw = item.get("content", "")
+                        clean_text = re.sub(r"<[^>]+>", " ", content_raw).strip()
+                        if not clean_text:
+                            continue
+
+                        media_attachments = item.get("media_attachments", [])
+                        media_urls = [m.get("url") for m in media_attachments if m.get("url")]
+
+                        posts.append({
+                            "source_id": str(item.get("id")),
+                            "source": "mastodon_social",
+                            "text": clean_text,
+                            "timestamp": item.get("created_at") or datetime.now(timezone.utc).isoformat(),
+                            "url": item.get("url"),
+                            "media_urls": media_urls,
+                            "hashtags": [f"#{clean_tag}"],
+                        })
+            except Exception:
+                continue
+
+        return posts
 
     def parse_payload(self, raw_posts: list[dict[str, Any]] | dict[str, Any] | None) -> list[WeatherReport]:
         """Parses raw social post payloads (list or single dict) into canonical WeatherReport objects.

@@ -281,6 +281,33 @@ async def rss_task(stream_manager: ConnectionManager, stop_event: asyncio.Event)
 
 
 # ---------------------------------------------------------------------------
+# Social Media OSINT polling task
+# ---------------------------------------------------------------------------
+
+async def social_osint_task(stream_manager: ConnectionManager, stop_event: asyncio.Event) -> None:
+    """Polls public social media OSINT feeds (#indiaweather, #monsoon, #IMD) on RSS_INTERVAL schedule."""
+    from ingestion.adapters.social.social_adapter import SocialAdapter
+    adapter = SocialAdapter()
+    logger.info("Social Media OSINT task started — polling live weather hashtags every %ds", RSS_INTERVAL)
+    while not stop_event.is_set():
+        try:
+            loop = asyncio.get_running_loop()
+            hashtags = ["indiaweather", "monsoon", "imd", "weatheralert"]
+            social_reports: list[WeatherReport] = await loop.run_in_executor(
+                None,
+                lambda: adapter.fetch_and_parse(hashtags=hashtags),
+            )
+            await _run_pipeline(social_reports, stream_manager, "social_media")
+        except Exception as exc:
+            logger.warning("Social OSINT fetch failed: %s", exc)
+
+        try:
+            await asyncio.wait_for(stop_event.wait(), timeout=RSS_INTERVAL)
+        except asyncio.TimeoutError:
+            pass
+
+
+# ---------------------------------------------------------------------------
 # Public entry point
 # ---------------------------------------------------------------------------
 
@@ -292,6 +319,7 @@ async def start_ingestion_scheduler(
     tasks: list[asyncio.Task[Any]] = [
         asyncio.create_task(open_meteo_task(stream_manager, stop_event), name="open_meteo_ingestion"),
         asyncio.create_task(rss_task(stream_manager, stop_event), name="rss_ingestion"),
+        asyncio.create_task(social_osint_task(stream_manager, stop_event), name="social_osint_ingestion"),
     ]
     logger.info("Ingestion scheduler started with %d source tasks.", len(tasks))
     return tasks

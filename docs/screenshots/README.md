@@ -66,3 +66,30 @@ This directory contains high-resolution visual documentation and feature walkthr
 * **Filename:** [`07_copilot_sitrep_generation.png`](07_copilot_sitrep_generation.png)
 * **Feature:** Copilot Intelligence Synthesis
 * **Description:** Demonstrates the Copilot generating an instant Executive Situation Briefing directly from live PostgreSQL database records, summarizing total active alerts, critical priority targets, and multi-source verification ratios.
+
+---
+
+### 8. Live Source Media & Report URL Links
+![08_source_media_urls](08_source_media_urls.png)
+
+* **Filename:** [`08_source_media_urls.png`](08_source_media_urls.png)
+* **Feature:** Source Provenance & Direct URL Audit Links
+* **Description:** Displays the Evidence Panel showing direct clickable links (`Source Media 1`, `Source Media 2`) that lead to published news articles and OSINT media reports for audit verification.
+
+---
+
+### 9. Operator Ground Report Entry Form
+![09_ground_report_entry_form](09_ground_report_entry_form.png)
+
+* **Filename:** [`09_ground_report_entry_form.png`](09_ground_report_entry_form.png)
+* **Feature:** Ground Responder Incident Submission Form
+* **Description:** Field report submission form with location details, category selection, severity assignment, description, and attached photo proof URL (`https://images.unsplash.com/...`).
+
+---
+
+### 10. Submitted Operator Report Evidence & Media Audit
+![10_submitted_operator_report_evidence](10_submitted_operator_report_evidence.png)
+
+* **Filename:** [`10_submitted_operator_report_evidence.png`](10_submitted_operator_report_evidence.png)
+* **Feature:** Real-Time Ingested Evidence Inspection
+* **Description:** Shows an operator-submitted report in the Evidence Panel, rendering the extracted location (`Mumbai Dadar`), confidence score, and direct media link.

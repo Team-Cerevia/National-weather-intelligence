@@ -7,7 +7,6 @@ from .evidence import (
 from .incident import Incident, IncidentSeverity, IncidentState, IncidentTimeline
 from .weather_report import DEFAULT_H3_RESOLUTION, MediaItem, WeatherReport
 
-
 __all__ = [
     "WeatherReport",
     "MediaItem",

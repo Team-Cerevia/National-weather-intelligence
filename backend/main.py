@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.routes import api_router
 from backend.api.routes.stream import stream_manager
-import backend.db.models  # Ensure ORM models are registered on Base.metadata
 from backend.db.session import init_db
 from backend.scheduler import start_ingestion_scheduler
 from backend.streaming import redis_subscriber_task

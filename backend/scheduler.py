@@ -16,12 +16,12 @@ from typing import Any
 from backend.api.routes.stream import ConnectionManager
 from backend.db.models import IncidentModel, ReportModel
 from backend.db.session import SessionLocal
+from backend.streaming import publish_incident_update
 from contracts.incident import Incident
 from contracts.weather_report import WeatherReport
 from ingestion.adapters.api.open_meteo_adapter import OpenMeteoAdapter
 from ingestion.adapters.social.news_rss_adapter import NewsRssAdapter
 from nlp.orchestrator import IntelligenceOrchestrator
-from backend.streaming import publish_incident_update
 
 logger = logging.getLogger("backend.scheduler")
 
@@ -71,22 +71,22 @@ RSS_FEEDS: list[str] = [
 ]
 
 # Polling intervals (seconds)
-OPEN_METEO_INTERVAL: int = int(os.getenv("OPEN_METEO_POLL_INTERVAL", "300"))   # 5 min
-RSS_INTERVAL: int = int(os.getenv("RSS_POLL_INTERVAL", "180"))                  # 3 min
+OPEN_METEO_INTERVAL: int = int(os.getenv("OPEN_METEO_POLL_INTERVAL", "300"))  # 5 min
+RSS_INTERVAL: int = int(os.getenv("RSS_POLL_INTERVAL", "180"))  # 3 min
 
 
 # ---------------------------------------------------------------------------
 # DB helpers (sync, run inside executor)
 # ---------------------------------------------------------------------------
 
+
 def _upsert_report(report: WeatherReport) -> None:
     """Persist a WeatherReport to the database (idempotent by primary key)."""
     db = SessionLocal()
     try:
         from sqlalchemy import select
-        existing = db.execute(
-            select(ReportModel.report_id).where(ReportModel.report_id == report.report_id)
-        ).scalar()
+
+        existing = db.execute(select(ReportModel.report_id).where(ReportModel.report_id == report.report_id)).scalar()
         if not existing:
             db.add(ReportModel.from_contract(report))
             db.commit()
@@ -100,14 +100,14 @@ def _upsert_report(report: WeatherReport) -> None:
 def _upsert_incident(incident: Incident) -> Incident:
     """Idempotently persist or update an incident; return the persisted version."""
     from sqlalchemy import select
+
     db = SessionLocal()
     try:
         # Ensure all referenced reports exist as stubs
         for rep_id in incident.report_ids:
-            if not db.execute(
-                select(ReportModel.report_id).where(ReportModel.report_id == rep_id)
-            ).scalar():
+            if not db.execute(select(ReportModel.report_id).where(ReportModel.report_id == rep_id)).scalar():
                 from datetime import datetime, timezone
+
                 stub = ReportModel(
                     report_id=rep_id,
                     source="system",
@@ -132,15 +132,11 @@ def _upsert_incident(incident: Incident) -> Incident:
             existing.report_ids = list(set(existing.report_ids or []) | set(incident.report_ids))
             for tl in incident.timeline:
                 from backend.db.models import IncidentTimelineModel
+
                 key = (tl.timestamp, tl.event_type, tl.description, tl.report_id)
-                existing_keys = {
-                    (t.timestamp, t.event_type, t.description, t.report_id)
-                    for t in existing.timeline
-                }
+                existing_keys = {(t.timestamp, t.event_type, t.description, t.report_id) for t in existing.timeline}
                 if key not in existing_keys:
-                    existing.timeline.append(
-                        IncidentTimelineModel.from_contract(tl, incident_id=incident.incident_id)
-                    )
+                    existing.timeline.append(IncidentTimelineModel.from_contract(tl, incident_id=incident.incident_id))
             db.commit()
             db.refresh(existing)
             incident = existing.to_contract()
@@ -184,9 +180,7 @@ async def _run_pipeline(
     orchestrator = _get_orchestrator()
 
     # NLP is CPU-bound — run in thread pool to avoid blocking the event loop
-    incidents: list[Incident] = await loop.run_in_executor(
-        None, orchestrator.process_reports, reports
-    )
+    incidents: list[Incident] = await loop.run_in_executor(None, orchestrator.process_reports, reports)
 
     logger.info("[%s] Pipeline produced %d incidents", source_label, len(incidents))
 
@@ -215,6 +209,7 @@ async def _run_pipeline(
 # Open-Meteo polling task
 # ---------------------------------------------------------------------------
 
+
 async def open_meteo_task(stream_manager: ConnectionManager, stop_event: asyncio.Event) -> None:
     """Polls Open-Meteo for all configured Indian cities on OPEN_METEO_INTERVAL schedule."""
     adapter = OpenMeteoAdapter()
@@ -228,9 +223,7 @@ async def open_meteo_task(stream_manager: ConnectionManager, stop_event: asyncio
         for city, state, lat, lon in INDIAN_CITIES:
             try:
                 loop = asyncio.get_running_loop()
-                city_reports: list[WeatherReport] = await loop.run_in_executor(
-                    None, adapter.fetch_and_parse, lat, lon
-                )
+                city_reports: list[WeatherReport] = await loop.run_in_executor(None, adapter.fetch_and_parse, lat, lon)
                 # Annotate with city/state metadata (Open-Meteo doesn't return place names)
                 for r in city_reports:
                     r.city = city
@@ -250,6 +243,7 @@ async def open_meteo_task(stream_manager: ConnectionManager, stop_event: asyncio
 # ---------------------------------------------------------------------------
 # RSS polling task
 # ---------------------------------------------------------------------------
+
 
 async def rss_task(stream_manager: ConnectionManager, stop_event: asyncio.Event) -> None:
     """Polls configured Indian news RSS feeds on RSS_INTERVAL schedule."""
@@ -284,9 +278,11 @@ async def rss_task(stream_manager: ConnectionManager, stop_event: asyncio.Event)
 # Social Media OSINT polling task
 # ---------------------------------------------------------------------------
 
+
 async def social_osint_task(stream_manager: ConnectionManager, stop_event: asyncio.Event) -> None:
     """Polls public social media OSINT feeds (#indiaweather, #monsoon, #IMD) on RSS_INTERVAL schedule."""
     from ingestion.adapters.social.social_adapter import SocialAdapter
+
     adapter = SocialAdapter()
     logger.info("Social Media OSINT task started — polling live weather hashtags every %ds", RSS_INTERVAL)
     while not stop_event.is_set():
@@ -310,6 +306,7 @@ async def social_osint_task(stream_manager: ConnectionManager, stop_event: async
 # ---------------------------------------------------------------------------
 # Public entry point
 # ---------------------------------------------------------------------------
+
 
 async def start_ingestion_scheduler(
     stream_manager: ConnectionManager,

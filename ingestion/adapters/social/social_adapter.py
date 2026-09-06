@@ -59,15 +59,17 @@ class SocialAdapter(BaseWeatherAdapter):
                         media_attachments = item.get("media_attachments", [])
                         media_urls = [m.get("url") for m in media_attachments if m.get("url")]
 
-                        posts.append({
-                            "source_id": str(item.get("id")),
-                            "source": "mastodon_social",
-                            "text": clean_text,
-                            "timestamp": item.get("created_at") or datetime.now(timezone.utc).isoformat(),
-                            "url": item.get("url"),
-                            "media_urls": media_urls,
-                            "hashtags": [f"#{clean_tag}"],
-                        })
+                        posts.append(
+                            {
+                                "source_id": str(item.get("id")),
+                                "source": "mastodon_social",
+                                "text": clean_text,
+                                "timestamp": item.get("created_at") or datetime.now(timezone.utc).isoformat(),
+                                "url": item.get("url"),
+                                "media_urls": media_urls,
+                                "hashtags": [f"#{clean_tag}"],
+                            }
+                        )
             except Exception:
                 continue
 

@@ -41,10 +41,9 @@ def ingest_report(
 
             # Trigger immediate NLP correlation & Redis/WebSocket pipeline broadcast
             try:
-                from nlp.orchestrator import IntelligenceOrchestrator
-                from backend.streaming import publish_incident_update
-                from backend.api.routes.stream import stream_manager
                 from backend.scheduler import _upsert_incident
+                from backend.streaming import publish_incident_update
+                from nlp.orchestrator import IntelligenceOrchestrator
 
                 orchestrator = IntelligenceOrchestrator()
                 incidents = orchestrator.process_reports([contract])

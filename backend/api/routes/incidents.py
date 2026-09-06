@@ -388,9 +388,12 @@ def query_copilot(
     critical_count = sum(1 for i in incidents if i.severity == IncidentSeverity.CRITICAL or i.severity == "CRITICAL")
     high_count = sum(1 for i in incidents if i.severity == IncidentSeverity.HIGH or i.severity == "HIGH")
     verified_count = sum(
-        1 for i in incidents if i.verification_summary and (
-            i.verification_summary.verification_status == VerificationStatus.SUPPORTED or
-            i.verification_summary.verification_status == "SUPPORTED"
+        1
+        for i in incidents
+        if i.verification_summary
+        and (
+            i.verification_summary.verification_status == VerificationStatus.SUPPORTED
+            or i.verification_summary.verification_status == "SUPPORTED"
         )
     )
 
@@ -398,10 +401,14 @@ def query_copilot(
 
     if "sitrep" in q or "briefing" in q or "summary" in q:
         sorted_inc = sorted(incidents, key=lambda x: x.priority_score, reverse=True)[:3]
-        priorities_str = "\n".join(
-            f"- [{inc.severity}] {inc.title} ({inc.city or 'India'}) - Priority: {inc.priority_score:.1f}"
-            for inc in sorted_inc
-        ) if sorted_inc else "- No active incidents recorded."
+        priorities_str = (
+            "\n".join(
+                f"- [{inc.severity}] {inc.title} ({inc.city or 'India'}) - Priority: {inc.priority_score:.1f}"
+                for inc in sorted_inc
+            )
+            if sorted_inc
+            else "- No active incidents recorded."
+        )
 
         reply = (
             "OPERATOR SITUATION BRIEFING (SITREP)\n\n"
@@ -419,8 +426,12 @@ def query_copilot(
         )
     elif "audit" in q or "fake" in q or "contradiction" in q:
         unverified_count = sum(
-            1 for i in incidents if i.verification_summary and (
-                i.verification_summary.verification_status in (VerificationStatus.UNVERIFIED, VerificationStatus.CONTRADICTED, "UNVERIFIED", "CONTRADICTED")
+            1
+            for i in incidents
+            if i.verification_summary
+            and (
+                i.verification_summary.verification_status
+                in (VerificationStatus.UNVERIFIED, VerificationStatus.CONTRADICTED, "UNVERIFIED", "CONTRADICTED")
             )
         )
         reply = (
@@ -431,7 +442,7 @@ def query_copilot(
         )
     else:
         reply = (
-            f"Acknowledged operator query: \"{query}\". System cross-referencing multi-source evidence "
+            f'Acknowledged operator query: "{query}". System cross-referencing multi-source evidence '
             f"and spatial parameters across {len(incidents)} live PostgreSQL incidents for verification."
         )
 
@@ -441,4 +452,3 @@ def query_copilot(
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "active_incidents_evaluated": len(incidents),
     }
-

@@ -971,17 +971,38 @@ a:hover { text-decoration: underline; }
 }
 
 .evidence-media {
+  margin-top: 4px;
+}
+
+.evidence-media-grid {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.evidence-media-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.evidence-thumbnail {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
 }
 
 .evidence-media-link {
   font-size: 11px;
-  color: var(--sky);
+  color: var(--sky-hover);
   background: var(--sky-muted);
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
+  align-self: flex-start;
+  text-decoration: none;
+  font-weight: 500;
 }
 
 /* ============================================================

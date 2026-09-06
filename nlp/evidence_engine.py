@@ -4,11 +4,10 @@ import hashlib
 import math
 from datetime import datetime, timezone
 
-from nlp.nlp_extractor import NLPExtractor
-
 from contracts.evidence import EvidenceItem, EvidenceRelationship, VerificationStatus, VerificationSummary
 from contracts.incident import Incident, IncidentSeverity, IncidentState
 from contracts.weather_report import WeatherReport
+from nlp.nlp_extractor import NLPExtractor
 
 # Source Reliability Base Weights (0.0 to 1.0)
 SOURCE_RELIABILITY_WEIGHTS = {
@@ -143,7 +142,9 @@ class EvidenceEngine:
         volume_multiplier = 1.0 + 0.12 * math.log(max(len(incident_reports), 1))
         source_multiplier = 1.0 + 0.10 * (distinct_supporting_sources - 1)
 
-        raw_priority = (severity_base + variance_offset) * (0.4 + 0.6 * overall_confidence) * volume_multiplier * source_multiplier
+        raw_priority = (
+            (severity_base + variance_offset) * (0.4 + 0.6 * overall_confidence) * volume_multiplier * source_multiplier
+        )
         priority_score = round(min(max(raw_priority, 10.0), 99.0), 1)
 
         verification_summary = VerificationSummary(

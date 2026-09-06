@@ -61,17 +61,30 @@ export function EvidencePanel({
                 )}
                 {ev.media_proof_urls.length > 0 && (
                   <div className="evidence-media">
-                    {ev.media_proof_urls.map((url, i) => (
-                      <a
-                        key={i}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="evidence-media-link"
-                      >
-                        Media Proof {i + 1}
-                      </a>
-                    ))}
+                    <div className="evidence-media-grid">
+                      {ev.media_proof_urls.map((url, i) => (
+                        <div key={i} className="evidence-media-item">
+                          {/\.(png|jpe?g|webp|gif)($|\?)/i.test(url) ? (
+                            <img
+                              src={url}
+                              alt={`Evidence photo ${i + 1}`}
+                              className="evidence-thumbnail"
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = "none";
+                              }}
+                            />
+                          ) : null}
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="evidence-media-link"
+                          >
+                            Source Media {i + 1}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </li>

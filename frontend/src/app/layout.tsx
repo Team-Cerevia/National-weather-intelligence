@@ -10,10 +10,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Weather Intelligence | National Big Data Analytics Platform",
+  title: "METEORA | National Weather Big Data Analytics Platform",
   description:
-    "Real-time weather incident monitoring and evidence-based verification for India. Powered by multi-source ingestion, NLP correlation, and spatial analysis.",
+    "METEORA - Real-time weather incident monitoring and evidence-based verification for India. Powered by multi-source ingestion, NLP correlation, and spatial analysis.",
   keywords: [
+    "METEORA",
     "weather intelligence",
     "India weather",
     "disaster monitoring",

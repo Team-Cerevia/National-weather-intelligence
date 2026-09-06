@@ -8,7 +8,7 @@ export function OperatorCopilotView({ incidents }: { incidents: Incident[] }) {
   >([
     {
       sender: "bot",
-      text: "Welcome, Emergency Response Operator. I am your National Weather Intelligence Copilot. How can I assist your team today?",
+      text: "Welcome, Emergency Response Operator. I am METEORA Copilot. How can I assist your team today?",
       time: "Just now",
     },
   ]);

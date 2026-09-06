@@ -130,19 +130,27 @@ a:hover { text-decoration: underline; }
 .stats-bar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
-.brand-icon {
-  font-size: 26px;
+.brand-logo-img {
+  height: 42px;
+  width: 42px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 1.5px solid var(--sage-dark);
+  background: #ffffff;
+  padding: 1px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .brand-title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .brand-sub {

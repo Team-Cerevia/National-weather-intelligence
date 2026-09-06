@@ -39,9 +39,14 @@ export function StatsBar({
   return (
     <header className="stats-bar">
       <div className="stats-bar-brand">
+        <img
+          src="/logo.png"
+          alt="METEORA Logo"
+          className="brand-logo-img"
+        />
         <div>
-          <h1 className="brand-title">Weather Intelligence</h1>
-          <p className="brand-sub">National Big Data Analytics Platform</p>
+          <h1 className="brand-title">METEORA</h1>
+          <p className="brand-sub">National Weather Big Data Analytics Platform</p>
         </div>
       </div>
 

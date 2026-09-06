@@ -35,6 +35,7 @@ def setup_database():
 def clean_database():
     """Clean all tables between tests to ensure complete test isolation without exclusive lock deadlocks."""
     import time
+
     for attempt in range(3):
         try:
             with engine.begin() as conn:

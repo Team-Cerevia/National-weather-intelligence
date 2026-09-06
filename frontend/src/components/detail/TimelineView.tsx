@@ -1,12 +1,12 @@
 import { format } from "date-fns";
 import type { IncidentTimeline } from "@/lib/types";
 
-const EVENT_TYPE_LABEL: Record<string, string> = {
-  incident_created: "Incident Created",
-  report_correlated: "Report Correlated",
-  state_change: "State Changed",
-  severity_escalated: "Severity Escalated",
-  report_added: "Report Added",
+const EVENT_CONFIG: Record<string, { label: string; badgeClass: string }> = {
+  incident_created: { label: "Incident Initialized", badgeClass: "timeline-badge--created" },
+  report_correlated: { label: "Multi-Source Correlated", badgeClass: "timeline-badge--correlated" },
+  state_change: { label: "State Transition", badgeClass: "timeline-badge--state" },
+  severity_escalated: { label: "Severity Escalation", badgeClass: "timeline-badge--severity" },
+  report_added: { label: "Evidence Report Ingested", badgeClass: "timeline-badge--report" },
 };
 
 export function TimelineView({ timeline }: { timeline: IncidentTimeline[] }) {
@@ -16,41 +16,77 @@ export function TimelineView({ timeline }: { timeline: IncidentTimeline[] }) {
 
   if (sorted.length === 0) {
     return (
-      <p className="detail-empty-sub">No timeline events recorded yet.</p>
+      <div className="timeline-empty">
+        <p className="detail-empty-sub">No timeline progression events recorded yet.</p>
+      </div>
     );
   }
 
   return (
-    <ol className="timeline">
-      {sorted.map((entry, i) => {
-        const label =
-          EVENT_TYPE_LABEL[entry.event_type] ??
-          entry.event_type.replace(/_/g, " ");
-        const isFirst = i === 0;
+    <div className="timeline-container">
+      <div className="timeline-header-summary">
+        <span className="timeline-count-badge">{timeline.length} Progression Events</span>
+        <span className="timeline-status-text">Chronological Audit Trail</span>
+      </div>
 
-        return (
-          <li key={i} className={`timeline-item ${isFirst ? "timeline-item--latest" : ""}`}>
-            <div className="timeline-dot" />
-            <div className="timeline-content">
-              <div className="timeline-header">
-                <span className="timeline-event">{label}</span>
-                <time className="timeline-time">
-                  {format(new Date(entry.timestamp), "dd MMM, HH:mm")}
-                </time>
+      <ol className="timeline">
+        {sorted.map((entry, i) => {
+          const cfg = EVENT_CONFIG[entry.event_type] ?? {
+            label: entry.event_type.replace(/_/g, " ").toUpperCase(),
+            badgeClass: "timeline-badge--default",
+          };
+          const isLatest = i === 0;
+
+          return (
+            <li key={i} className={`timeline-item ${isLatest ? "timeline-item--latest" : ""}`}>
+              <div className="timeline-marker-wrapper">
+                <div className={`timeline-dot ${isLatest ? "timeline-dot--active" : ""}`} />
+                {i < sorted.length - 1 && <div className="timeline-connector" />}
               </div>
-              <p className="timeline-desc">{entry.description}</p>
-              {entry.new_state && (
-                <span className="timeline-tag">→ {entry.new_state}</span>
-              )}
-              {entry.new_severity && (
-                <span className="timeline-tag timeline-tag--sev">
-                  SEVERITY: {entry.new_severity}
-                </span>
-              )}
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+
+              <div className="timeline-content-card">
+                <div className="timeline-card-header">
+                  <span className={`timeline-event-type ${cfg.badgeClass}`}>
+                    {cfg.label}
+                  </span>
+                  <time className="timeline-time">
+                    {format(new Date(entry.timestamp), "dd MMM yyyy, HH:mm:ss")}
+                  </time>
+                </div>
+
+                <p className="timeline-desc">{entry.description}</p>
+
+                <div className="timeline-meta-row">
+                  {entry.previous_state && entry.new_state && (
+                    <div className="timeline-state-change">
+                      <span className="state-pill state-pill--old">{entry.previous_state}</span>
+                      <span className="state-arrow">→</span>
+                      <span className="state-pill state-pill--new">{entry.new_state}</span>
+                    </div>
+                  )}
+
+                  {!entry.previous_state && entry.new_state && (
+                    <span className="state-pill state-pill--new">STATE: {entry.new_state}</span>
+                  )}
+
+                  {entry.new_severity && (
+                    <span className={`severity-tag severity-tag--${entry.new_severity.toLowerCase()}`}>
+                      {entry.previous_severity ? `${entry.previous_severity} → ` : ""}
+                      {entry.new_severity}
+                    </span>
+                  )}
+
+                  {entry.report_id && (
+                    <code className="timeline-report-id">
+                      REF: {entry.report_id}
+                    </code>
+                  )}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }

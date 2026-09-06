@@ -93,3 +93,12 @@ This directory contains high-resolution visual documentation and feature walkthr
 * **Filename:** [`10_submitted_operator_report_evidence.png`](10_submitted_operator_report_evidence.png)
 * **Feature:** Real-Time Ingested Evidence Inspection
 * **Description:** Shows an operator-submitted report in the Evidence Panel, rendering the extracted location (`Mumbai Dadar`), confidence score, and direct media link.
+
+---
+
+### 11. Upgraded Incident Lifecycle Timeline
+![11_incident_timeline_lifecycle](11_incident_timeline_lifecycle.png)
+
+* **Filename:** [`11_incident_timeline_lifecycle.png`](11_incident_timeline_lifecycle.png)
+* **Feature:** Interactive Chronological Audit Trail & State Transitions
+* **Description:** Tactical event progression timeline displaying event category badges (`Incident Initialized`, `Multi-Source Correlated`, `State Transition`), exact UTC timestamps, human-readable descriptions, state transition pills (`REPORTED → VERIFIED`), severity escalations, and underlying report reference tags (`REF: rep_...`).

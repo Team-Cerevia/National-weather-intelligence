@@ -6,9 +6,19 @@ interface StatsBarProps {
   incidents: Incident[];
   connected: boolean;
   lastEventAt: Date | null;
+  activeView?: "map" | "records" | "copilot";
+  onViewChange?: (view: "map" | "records" | "copilot") => void;
+  onOpenReportModal?: () => void;
 }
 
-export function StatsBar({ incidents, connected, lastEventAt }: StatsBarProps) {
+export function StatsBar({
+  incidents,
+  connected,
+  lastEventAt,
+  activeView = "map",
+  onViewChange,
+  onOpenReportModal,
+}: StatsBarProps) {
   const [pulse, setPulse] = useState(false);
 
   const total = incidents.length;
@@ -29,7 +39,6 @@ export function StatsBar({ incidents, connected, lastEventAt }: StatsBarProps) {
   return (
     <header className="stats-bar">
       <div className="stats-bar-brand">
-        <span className="brand-icon">🌦️</span>
         <div>
           <h1 className="brand-title">Weather Intelligence</h1>
           <p className="brand-sub">National Big Data Analytics Platform</p>
@@ -43,16 +52,42 @@ export function StatsBar({ incidents, connected, lastEventAt }: StatsBarProps) {
         <StatPill label="Critical" value={critical} variant="danger" />
       </div>
 
-      <div className="stats-bar-live">
-        <span className={`live-dot ${connected ? "live-dot--on" : "live-dot--off"} ${pulse ? "live-dot--pulse" : ""}`} />
-        <span className={`live-label ${connected ? "live-label--on" : "live-label--off"}`}>
-          {connected ? "Live" : "Reconnecting…"}
-        </span>
-        {lastEventAt && (
-          <span className="live-last">
-            Last update {lastEventAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      <div className="stats-bar-views">
+        <button
+          className={`view-nav-btn ${activeView === "map" ? "view-nav-btn--active" : ""}`}
+          onClick={() => onViewChange?.("map")}
+        >
+          GIS Command Map
+        </button>
+        <button
+          className={`view-nav-btn ${activeView === "records" ? "view-nav-btn--active" : ""}`}
+          onClick={() => onViewChange?.("records")}
+        >
+          Records & SITREP
+        </button>
+        <button
+          className={`view-nav-btn ${activeView === "copilot" ? "view-nav-btn--active" : ""}`}
+          onClick={() => onViewChange?.("copilot")}
+        >
+          Operator Copilot
+        </button>
+      </div>
+
+      <div className="stats-bar-actions">
+        <button className="submit-report-btn" onClick={onOpenReportModal}>
+          + Report Ground Incident
+        </button>
+        <div className="stats-bar-live">
+          <span className={`live-dot ${connected ? "live-dot--on" : "live-dot--off"} ${pulse ? "live-dot--pulse" : ""}`} />
+          <span className={`live-label ${connected ? "live-label--on" : "live-label--off"}`}>
+            {connected ? "Live Stream" : "Reconnecting…"}
           </span>
-        )}
+          {lastEventAt && (
+            <span className="live-last">
+              Last update {lastEventAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          )}
+        </div>
       </div>
     </header>
   );

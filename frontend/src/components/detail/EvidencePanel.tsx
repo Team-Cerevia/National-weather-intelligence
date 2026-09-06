@@ -57,7 +57,7 @@ export function EvidencePanel({
                 </div>
                 <p className="evidence-reasoning">{ev.reasoning}</p>
                 {ev.extracted_location && (
-                  <p className="evidence-loc">📍 {ev.extracted_location}</p>
+                  <p className="evidence-loc">Location: {ev.extracted_location}</p>
                 )}
                 {ev.media_proof_urls.length > 0 && (
                   <div className="evidence-media">
@@ -69,7 +69,7 @@ export function EvidencePanel({
                         rel="noopener noreferrer"
                         className="evidence-media-link"
                       >
-                        🔗 Media {i + 1}
+                        Media Proof {i + 1}
                       </a>
                     ))}
                   </div>

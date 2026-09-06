@@ -1136,3 +1136,416 @@ a:hover { text-decoration: underline; }
 .maplibregl-ctrl-group button:hover {
   background: var(--cream-2) !important;
 }
+
+/* ============================================================
+   OPERATOR NAVIGATION TABS & ACTIONS
+   ============================================================ */
+.stats-bar-views {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-nav-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.view-nav-btn:hover {
+  background: var(--cream-2);
+}
+
+.view-nav-btn--active {
+  background: var(--sky);
+  color: #fff;
+  border-color: var(--sky);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.stats-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.submit-report-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: #0284c7;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.submit-report-btn:hover {
+  background: var(--sky-hover);
+}
+
+/* ============================================================
+   OPERATOR COPILOT VIEW
+   ============================================================ */
+.copilot-container {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - var(--header-h));
+  background: var(--cream);
+}
+
+.copilot-sidebar {
+  width: 320px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.copilot-sidebar h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.copilot-preset-btn {
+  padding: 10px 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copilot-preset-btn:hover {
+  background: var(--sky-muted);
+  border-color: var(--sky-light);
+  color: var(--text-primary);
+}
+
+.copilot-stats-box {
+  margin-top: auto;
+  padding: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.copilot-chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+}
+
+.copilot-messages {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.copilot-msg {
+  max-width: 80%;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.copilot-msg--user {
+  align-self: flex-end;
+  background: var(--sky);
+  color: #fff;
+}
+
+.copilot-msg--bot {
+  align-self: flex-start;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.copilot-msg-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  opacity: 0.85;
+  margin-bottom: 6px;
+}
+
+.copilot-input-row {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--sidebar-bg);
+}
+
+.copilot-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  outline: none;
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.copilot-send-btn {
+  padding: 10px 20px;
+  background: var(--sky);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.copilot-send-btn:hover {
+  background: var(--sky-hover);
+}
+
+/* ============================================================
+   RECORDS VIEW
+   ============================================================ */
+.records-view-container {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--cream);
+}
+
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.records-header h2 {
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.records-header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.records-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-export-csv {
+  padding: 8px 16px;
+  background: var(--sage);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btn-export-csv:hover {
+  opacity: 0.9;
+}
+
+.btn-export-json {
+  padding: 8px 16px;
+  background: var(--sky);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-export-json:hover {
+  background: var(--sky-hover);
+}
+
+.records-table-wrapper {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.records-table th {
+  background: var(--sidebar-bg);
+  padding: 12px 16px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.records-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.record-category-tag {
+  background: var(--sky-muted);
+  color: var(--text-primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   MODAL OVERLAY
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  width: 480px;
+  max-width: 90vw;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--sidebar-bg);
+}
+
+.modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  outline: none;
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-secondary {
+  padding: 8px 16px;
+  background: var(--cream-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  padding: 8px 16px;
+  background: var(--sky);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--sky-hover);
+}

@@ -44,7 +44,7 @@ export function TimelineView({ timeline }: { timeline: IncidentTimeline[] }) {
               )}
               {entry.new_severity && (
                 <span className="timeline-tag timeline-tag--sev">
-                  ⚡ {entry.new_severity}
+                  SEVERITY: {entry.new_severity}
                 </span>
               )}
             </div>

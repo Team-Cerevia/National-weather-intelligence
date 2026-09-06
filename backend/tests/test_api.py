@@ -33,11 +33,20 @@ def setup_database():
 
 @pytest.fixture(autouse=True)
 def clean_database():
-    """Clean all tables between tests to ensure complete test isolation."""
-    with engine.begin() as conn:
-        conn.execute(
-            text("TRUNCATE TABLE incident_timeline, evidence_items, incidents, reports RESTART IDENTITY CASCADE;")
-        )
+    """Clean all tables between tests to ensure complete test isolation without exclusive lock deadlocks."""
+    import time
+    for attempt in range(3):
+        try:
+            with engine.begin() as conn:
+                conn.execute(text("DELETE FROM incident_timeline;"))
+                conn.execute(text("DELETE FROM evidence_items;"))
+                conn.execute(text("DELETE FROM incidents;"))
+                conn.execute(text("DELETE FROM reports;"))
+            break
+        except Exception:
+            if attempt == 2:
+                raise
+            time.sleep(0.2)
     yield
 
 

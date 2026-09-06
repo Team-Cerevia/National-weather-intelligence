@@ -4,9 +4,9 @@ from datetime import datetime, timedelta, timezone
 
 from contracts.evidence import VerificationStatus
 from contracts.weather_report import WeatherReport
-from intelligence.incident_engine import IncidentEngine
-from intelligence.nlp_extractor import NLPExtractor
-from intelligence.orchestrator import IntelligenceOrchestrator
+from nlp.incident_engine import IncidentEngine
+from nlp.nlp_extractor import NLPExtractor
+from nlp.orchestrator import IntelligenceOrchestrator
 
 
 def test_nlp_extractor_event_classification():
@@ -257,7 +257,7 @@ def test_evidence_engine_negation_contradiction():
 
 def test_image_deduplication_and_phash():
     """Test 10: ImageDeduplicator correctly computes pHash and detects duplicate images."""
-    from intelligence.vision.image_dedup import ImageDeduplicator
+    from nlp.vision.image_dedup import ImageDeduplicator
 
     # Duplicate exact or near-identical hashes
     hash1 = ImageDeduplicator.compute_phash("mock_image_data_stream_1")

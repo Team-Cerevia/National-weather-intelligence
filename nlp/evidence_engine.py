@@ -3,10 +3,11 @@
 import hashlib
 from datetime import datetime, timezone
 
+from nlp.nlp_extractor import NLPExtractor
+
 from contracts.evidence import EvidenceItem, EvidenceRelationship, VerificationStatus, VerificationSummary
 from contracts.incident import Incident, IncidentSeverity, IncidentState
 from contracts.weather_report import WeatherReport
-from intelligence.nlp_extractor import NLPExtractor
 
 # Source Reliability Weights (0.0 to 1.0)
 SOURCE_RELIABILITY_WEIGHTS = {

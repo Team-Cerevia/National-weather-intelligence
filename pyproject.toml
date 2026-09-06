@@ -29,7 +29,7 @@ dependencies = [
 
 
 [tool.uv_build]
-packages = ["contracts", "ingestion", "streaming", "intelligence", "backend"]
+packages = ["contracts", "ingestion", "streaming", "nlp", "backend"]
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
@@ -40,7 +40,7 @@ pythonpath = "."
 
 [tool.pyright]
 pythonpath = ["."]
-include = ["contracts", "ingestion", "streaming", "intelligence", "backend", "tests"]
+include = ["contracts", "ingestion", "streaming", "nlp", "backend", "tests"]
 
 [tool.ruff]
 target-version = "py312"

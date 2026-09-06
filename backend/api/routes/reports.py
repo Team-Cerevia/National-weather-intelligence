@@ -36,8 +36,25 @@ def ingest_report(
             db.add(new_model)
             db.commit()
             db.refresh(new_model)
+            contract = new_model.to_contract()
             logger.info("Persisted new report: %s", report.report_id)
-            return new_model.to_contract()
+
+            # Trigger immediate NLP correlation & Redis/WebSocket pipeline broadcast
+            try:
+                from nlp.orchestrator import IntelligenceOrchestrator
+                from backend.streaming import publish_incident_update
+                from backend.api.routes.stream import stream_manager
+                from backend.scheduler import _upsert_incident
+
+                orchestrator = IntelligenceOrchestrator()
+                incidents = orchestrator.process_reports([contract])
+                for inc in incidents:
+                    persisted_inc = _upsert_incident(inc)
+                    publish_incident_update(persisted_inc)
+            except Exception as pipe_err:
+                logger.warning("Pipeline correlation triggered on report submission encountered: %s", pipe_err)
+
+            return contract
 
         # Idempotent update for existing report
         loc_val = None

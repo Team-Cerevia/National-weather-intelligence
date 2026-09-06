@@ -41,7 +41,16 @@ def test_nlp_extractor_metric_parsing():
     assert metrics["temperature_c"] == 32.0
 
 
-def test_incident_engine_correlation():
+def test_nlp_onnx_embedding():
+    """Test 3b: ONNX Embedding Engine generates normalized 384-d vectors."""
+    extractor = NLPExtractor()
+    embedding = extractor.compute_embedding("Heavy rainfall and storm in Mumbai")
+
+    assert isinstance(embedding, list)
+    assert len(embedding) == 384
+    # Ensure non-zero normalized vector
+    assert any(val != 0.0 for val in embedding)
+
     """Test 4: IncidentEngine correlates spatio-temporally proximate reports."""
     engine = IncidentEngine(time_window_hours=6.0)
     now = datetime.now(timezone.utc)

@@ -9,7 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.routes import api_router
 from backend.api.routes.stream import stream_manager
+import backend.db.models  # Ensure ORM models are registered on Base.metadata
 from backend.db.session import init_db
+from backend.scheduler import start_ingestion_scheduler
 from backend.streaming import redis_subscriber_task
 
 logging.basicConfig(
@@ -24,28 +26,38 @@ async def lifespan(app: FastAPI):
     """Lifespan context manager managing schema verification and Redis subscriber lifecycle."""
     logger.info("Verifying database schema and PostGIS extension on startup...")
     try:
-        init_db()
+        await asyncio.to_thread(init_db)
         logger.info("Database schema verified successfully.")
     except Exception as e:
         logger.warning("Database startup check encountered: %s", e)
 
-    # Launch background Redis subscriber task
+    # Shared stop event for all background tasks
     stop_event = asyncio.Event()
+    app.state.stop_event = stop_event
+
+    # Launch background Redis subscriber task
     subscriber_task = asyncio.create_task(redis_subscriber_task(manager=stream_manager, stop_event=stop_event))
-    app.state.redis_stop_event = stop_event
     app.state.redis_subscriber_task = subscriber_task
     logger.info("Redis incident update subscriber task started.")
 
+    # Launch ingestion scheduler (Open-Meteo + RSS polling)
+    ingestion_tasks = await start_ingestion_scheduler(stream_manager, stop_event)
+    app.state.ingestion_tasks = ingestion_tasks
+    logger.info("Ingestion scheduler started with %d source tasks.", len(ingestion_tasks))
+
     yield
 
-    # Clean shutdown of subscriber task
-    logger.info("Stopping Redis incident subscriber task...")
+    # Clean shutdown of all background tasks
+    logger.info("Stopping all background tasks...")
     stop_event.set()
-    subscriber_task.cancel()
-    try:
-        await asyncio.wait_for(subscriber_task, timeout=2.0)
-    except (asyncio.CancelledError, asyncio.TimeoutError, Exception) as exc:
-        logger.debug("Redis subscriber task terminated: %s", exc)
+
+    all_tasks = [subscriber_task, *(getattr(app.state, "ingestion_tasks", []))]
+    for task in all_tasks:
+        task.cancel()
+    results = await asyncio.gather(*all_tasks, return_exceptions=True)
+    for result in results:
+        if isinstance(result, Exception) and not isinstance(result, asyncio.CancelledError):
+            logger.debug("Background task terminated with: %s", result)
     logger.info("Shutting down backend API service.")
 
 

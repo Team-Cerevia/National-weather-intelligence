@@ -22,8 +22,10 @@ from contracts.weather_report import WeatherReport
 from ingestion.adapters.api.open_meteo_adapter import OpenMeteoAdapter
 from ingestion.adapters.social.news_rss_adapter import NewsRssAdapter
 from nlp.orchestrator import IntelligenceOrchestrator
+from streaming.dlq import DeadLetterQueue
 
 logger = logging.getLogger("backend.scheduler")
+_dlq = DeadLetterQueue()
 
 # ---------------------------------------------------------------------------
 # Indian cities: (name, state, latitude, longitude)
@@ -75,13 +77,8 @@ OPEN_METEO_INTERVAL: int = int(os.getenv("OPEN_METEO_POLL_INTERVAL", "300"))  # 
 RSS_INTERVAL: int = int(os.getenv("RSS_POLL_INTERVAL", "180"))  # 3 min
 
 
-# ---------------------------------------------------------------------------
-# DB helpers (sync, run inside executor)
-# ---------------------------------------------------------------------------
-
-
 def _upsert_report(report: WeatherReport) -> None:
-    """Persist a WeatherReport to the database (idempotent by primary key)."""
+    """Persist a WeatherReport to the database (idempotent by primary key). Routes errors to DLQ."""
     db = SessionLocal()
     try:
         from sqlalchemy import select
@@ -93,6 +90,10 @@ def _upsert_report(report: WeatherReport) -> None:
     except Exception as exc:
         db.rollback()
         logger.warning("Failed to upsert report %s: %s", report.report_id, exc)
+        try:
+            _dlq.send_to_dlq(report.model_dump(mode="json"), f"Scheduler upsert failure: {exc}")
+        except Exception as dlq_exc:
+            logger.debug("DLQ dispatch note: %s", dlq_exc)
     finally:
         db.close()
 

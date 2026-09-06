@@ -100,6 +100,9 @@ class EvidenceEngine:
         else:
             overall_confidence = 0.30
 
+        # Check if any official source exists in supporting evidence
+        has_official_source = any(e.source_type == "official" or e.source.lower() == "imd" for e in evidence_items if e.relationship == EvidenceRelationship.SUPPORTING)
+
         # Verification Status & Incident State Logic
         if contradicting_count > supporting_count and contradicting_count > 1:
             status = VerificationStatus.CONTRADICTED
@@ -108,12 +111,13 @@ class EvidenceEngine:
                 f"Incident contradicts ground reality. {contradicting_count} contradicting report(s) "
                 f"outweigh {supporting_count} supporting report(s)."
             )
-        elif overall_confidence >= 0.70 and supporting_count >= 2:
+        elif has_official_source or (overall_confidence >= 0.65 and supporting_count >= 2):
             status = VerificationStatus.SUPPORTED
             state = IncidentState.VERIFIED
+            source_tag = "official meteorological feed" if has_official_source else "multi-source reports"
             explanation = (
-                f"Verified by {supporting_count} multi-source report(s) across "
-                f"{', '.join(supporting_sources)} with {int(overall_confidence * 100)}% confidence."
+                f"Verified by {source_tag} across {supporting_count} report(s) "
+                f"({', '.join(supporting_sources)}) with {int(overall_confidence * 100)}% confidence."
             )
         elif supporting_count >= 1:
             status = VerificationStatus.PENDING_REVIEW

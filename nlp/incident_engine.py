@@ -153,7 +153,7 @@ class IncidentEngine:
         )
 
     def _add_report_to_incident(self, incident: Incident, report: WeatherReport, category: str) -> None:
-        """Adds a matching report to an existing incident, updating spatial bounds and timeline."""
+        """Adds a matching report to an existing incident, updating spatial bounds, priority, and timeline."""
         if report.report_id not in incident.report_ids:
             incident.report_ids.append(report.report_id)
 
@@ -167,11 +167,44 @@ class IncidentEngine:
             if res == DEFAULT_H3_RESOLUTION and report.h3_cell not in incident.h3_cells:
                 incident.h3_cells.append(report.h3_cell)
 
+        # Recalculate geographic centroid if new report coordinates are provided
+        if report.latitude is not None and report.longitude is not None:
+            if incident.latitude is not None and incident.longitude is not None:
+                n = len(incident.report_ids)
+                incident.latitude = round((incident.latitude * (n - 1) + report.latitude) / n, 4)
+                incident.longitude = round((incident.longitude * (n - 1) + report.longitude) / n, 4)
+            else:
+                incident.latitude = report.latitude
+                incident.longitude = report.longitude
+
+        # Dynamic priority score calculation
+        report_count = len(incident.report_ids)
+        base_priority = 40.0
+        if incident.event_category in ["CYCLONE", "FLOOD"]:
+            base_priority = 65.0
+        elif incident.event_category in ["WATERLOGGING", "THUNDERSTORM", "LIGHTNING"]:
+            base_priority = 55.0
+
+        # Increment priority based on report density
+        priority_boost = min(report_count * 7.5, 30.0)
+        incident.priority_score = min(round(base_priority + priority_boost, 1), 99.0)
+
+        # Dynamic severity escalation
+        new_severity = incident.severity
+        if report_count >= 5 or incident.priority_score >= 85.0:
+            new_severity = IncidentSeverity.CRITICAL
+        elif report_count >= 3 or incident.priority_score >= 70.0:
+            new_severity = IncidentSeverity.HIGH
+
+        if new_severity != incident.severity:
+            incident.severity = new_severity
+
         # Add timeline entry
         timeline_entry = IncidentTimeline(
             timestamp=report.timestamp,
             event_type="report_correlated",
             description=f"Correlated supporting report from {report.source}.",
+            new_severity=incident.severity,
             report_id=report.report_id,
         )
         incident.timeline.append(timeline_entry)

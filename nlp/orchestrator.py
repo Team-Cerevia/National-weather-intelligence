@@ -2,9 +2,9 @@
 
 from contracts.incident import Incident
 from contracts.weather_report import WeatherReport
-from intelligence.evidence_engine import EvidenceEngine
-from intelligence.incident_engine import IncidentEngine
-from intelligence.nlp_extractor import NLPExtractor
+from nlp.evidence_engine import EvidenceEngine
+from nlp.incident_engine import IncidentEngine
+from nlp.nlp_extractor import NLPExtractor
 
 
 class IntelligenceOrchestrator:

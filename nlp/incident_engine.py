@@ -7,7 +7,7 @@ import h3
 
 from contracts.incident import Incident, IncidentSeverity, IncidentState, IncidentTimeline
 from contracts.weather_report import DEFAULT_H3_RESOLUTION, WeatherReport
-from intelligence.nlp_extractor import NLPExtractor
+from nlp.nlp_extractor import NLPExtractor
 
 # Event type compatibility mapping (events that belong to the same weather phenomenon)
 COMPATIBLE_EVENTS = {

@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="#overview">Overview</a> •
+  <a href="#platform-showcase--core-differentiators">Showcase & Differentiators</a> •
   <a href="#core-intelligence-pipeline">Intelligence Pipeline</a> •
   <a href="#technology-stack">Tech Stack</a> •
   <a href="#system-architecture">Architecture</a> •
@@ -32,6 +33,46 @@ Unlike standard forecasting apps that display radar or numerical predictions, **
 - **H3 Spatial & Temporal Correlation**: Clusters reports into unified incidents using Uber H3 Resolution 7 hexagonal indexing and sliding time windows.
 - **Evidence-Based Verification**: Assigns transparent confidence scores and verification states (`SUPPORTED`, `CONTRADICTED`, `UNVERIFIED`, `PENDING_REVIEW`) based on source trust weighting.
 - **GIS Command Center & SITREP Export**: Next.js dashboard with interactive MapLibre/Leaflet mapping, real-time WebSockets, and 1-click government SITREP exports (CSV/JSON).
+
+---
+
+## 📸 Platform Showcase & Core Differentiators
+
+> **Core Philosophy**: METEORA is **NOT** a weather forecasting app. It is a **Ground-Truth Verification & Impact Correlation Engine** for emergency response teams, meteorologists, and disaster management authorities.
+
+### 1. Interactive GIS Command Center Map & Real-Time Incident Stream
+* **Differentiator**: High-contrast command-center GIS mapping with Uber H3 Resolution 7 hexagonal spatial indexing, real-time WebSocket stream updates, dynamic priority heat indicators, and custom SVG weather category callout pins.
+
+![GIS Command Center Map](docs/screenshots/01_gis_command_map.png)
+
+---
+
+### 2. Multi-Source Evidence & Verification Panel
+* **Differentiator**: Avoids naive binary "True/Fake" labels. Provides source trust weighting (IMD: 0.95, News: 0.70, Citizen: 0.45), transparent supporting vs. contradicting evidence items, ONNX semantic similarity scoring, and full source provenance tracing.
+
+![Multi-Source Evidence Panel](docs/screenshots/02_evidence_detail_panel.png)
+
+---
+
+### 3. Live Ground Observations & Multi-Modal Field Ingestion
+* **Differentiator**: Direct field observation reporting with geotagged locations, hazard severity indexing, perceptual image hash (`dHash`) deduplication, and zero-latency WebSocket map propagation for first responders.
+
+![Live Ground Incident Modal](docs/screenshots/03_live_ground_report_modal.png)
+
+---
+
+### 4. Inter-Agency Records Management & 1-Click SITREP Export
+* **Differentiator**: Structured incident lifecycle management with instant government Situation Report (SITREP) CSV and JSON exports customized for NDRF, MoES, and MHA inter-agency disaster response.
+
+![Records Management & SITREP Export](docs/screenshots/04_records_sitrep_management.png)
+
+---
+
+### 5. Operator AI Copilot & Executive Briefing Generator
+* **Differentiator**: Context-aware AI decision-support copilot featuring quick-action operational presets for automated executive briefings, NDRF unit deployment rules, and contradiction audit trails.
+
+![Operator Copilot Assistant](docs/screenshots/05_operator_copilot_assistant.png)
+
 
 ---
 

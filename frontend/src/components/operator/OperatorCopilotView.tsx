@@ -29,9 +29,10 @@ export function OperatorCopilotView({ incidents }: { incidents: Incident[] }) {
     setLoading(true);
 
     try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
       const res = await fetch(
-        `http://localhost:8000/api/v1/incidents/copilot?query=${encodeURIComponent(query)}`,
-        { method: "POST" }
+        `${apiBase}/incidents/copilot?query=${encodeURIComponent(query)}`,
+        { method: "GET" }
       );
       if (res.ok) {
         const data = await res.json();

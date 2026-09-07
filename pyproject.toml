@@ -22,6 +22,7 @@ dependencies = [
     "scikit-learn>=1.6.0",
     "spacy>=3.8.0",
     "sqlalchemy>=2.0.0",
+    "tokenizers>=0.23.2",
     "uvicorn>=0.30.0",
     "websockets>=17.1",
 ]
@@ -38,6 +39,8 @@ build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 pythonpath = "."
+testpaths = ["tests"]
+addopts = "-q"
 
 [tool.pyright]
 pythonpath = ["."]

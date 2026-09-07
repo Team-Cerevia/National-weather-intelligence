@@ -139,15 +139,31 @@ class EvidenceEngine:
             IncidentSeverity.LOW: 20.0,
         }.get(incident.severity, 45.0)
 
-        # Hash-based title variance factor (+/- 8.0) so incidents with identical severity & 1 report have natural, explainable variance
-        title_hash = int(hashlib.md5(incident.title.encode("utf-8")).hexdigest()[:6], 16)
-        variance_offset = (title_hash % 160 - 80) / 10.0  # -8.0 to +8.0
+        # Event category domain weights (e.g. CYCLONE / FLOOD / LIGHTNING carry inherent life-safety risks)
+        event_weight = {
+            "CYCLONE": 1.15,
+            "FLOOD": 1.12,
+            "LIGHTNING": 1.08,
+            "WATERLOGGING": 1.05,
+            "THUNDERSTORM": 1.05,
+            "HAILSTORM": 1.02,
+            "HEATWAVE": 1.02,
+        }.get(incident.event_category.upper(), 1.0)
+
+        # Recency factor: slightly decay priority if incident has seen no updates in > 24 hours
+        recency_hours = (datetime.now(timezone.utc) - incident.last_updated_at).total_seconds() / 3600.0
+        recency_factor = max(0.70, 1.0 - 0.01 * max(0.0, recency_hours - 6.0))
 
         volume_multiplier = 1.0 + 0.12 * math.log(max(len(incident_reports), 1))
         source_multiplier = 1.0 + 0.10 * (distinct_supporting_sources - 1)
 
         raw_priority = (
-            (severity_base + variance_offset) * (0.4 + 0.6 * overall_confidence) * volume_multiplier * source_multiplier
+            severity_base
+            * event_weight
+            * (0.4 + 0.6 * overall_confidence)
+            * volume_multiplier
+            * source_multiplier
+            * recency_factor
         )
         priority_score = round(min(max(raw_priority, 10.0), 99.0), 1)
 

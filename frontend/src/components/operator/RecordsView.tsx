@@ -106,7 +106,7 @@ export function RecordsView({ incidents }: { incidents: Incident[] }) {
                     {inc.severity}
                   </span>
                 </td>
-                <td className="font-bold text-purple-700">{inc.priority_score.toFixed(1)}</td>
+                <td className="font-bold text-purple-700">{(inc.priority_score ?? 0).toFixed(1)}</td>
                 <td>
                   {Math.round(
                     (inc.verification_summary?.overall_confidence ?? 0.8) * 100

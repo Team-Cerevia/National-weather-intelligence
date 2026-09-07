@@ -3,6 +3,12 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# ML model files (download via scripts/download_model.py)
+models/*.onnx
+models/*.bin
+models/onnx/
+models/*
+
 # C extensions
 *.so
 

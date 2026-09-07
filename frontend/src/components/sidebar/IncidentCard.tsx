@@ -39,7 +39,7 @@ export function IncidentCard({
         <EventIcon category={incident.event_category} size="md" />
         <div className="incident-card-meta">
           <span className="priority-pill">
-            PRIORITY {incident.priority_score.toFixed(1)}
+            PRIORITY {(incident.priority_score ?? 0).toFixed(1)}
           </span>
           <SeverityBadge severity={incident.severity} />
           <span className="incident-card-ago">{ago}</span>

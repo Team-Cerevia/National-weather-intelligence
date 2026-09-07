@@ -7,6 +7,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select, text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.db.models import EvidenceItemModel, IncidentModel, IncidentTimelineModel, ReportModel
@@ -30,20 +31,23 @@ def _ensure_report_stub(
 
     When the real WeatherReport is ingested later, its upsert logic will overwrite this stub.
     Stub records always have source_type='stub' so GET /reports/{id} returns 404 until genuine data arrives.
+    Uses INSERT + IntegrityError catch to avoid TOCTOU race conditions under concurrent requests.
     """
     if not report_id:
         return
-    existing = db.execute(select(ReportModel.report_id).where(ReportModel.report_id == report_id)).scalar()
-    if not existing:
-        stub = ReportModel(
-            report_id=report_id,
-            source=source,
-            source_type="stub",
-            timestamp=ts or datetime.now(timezone.utc),
-            text=f"Report {report_id} pending detailed payload",
-        )
-        db.add(stub)
+    stub = ReportModel(
+        report_id=report_id,
+        source=source,
+        source_type="stub",
+        timestamp=ts or datetime.now(timezone.utc),
+        text=f"Report {report_id} pending detailed payload",
+    )
+    db.add(stub)
+    try:
         db.flush()
+    except IntegrityError:
+        # Another concurrent request already inserted this report — safe to ignore
+        db.rollback()
 
 
 @router.get(
@@ -373,7 +377,7 @@ def upsert_incident(
         ) from e
 
 
-@router.post(
+@router.get(
     "/copilot",
     summary="Operator Copilot Assistant",
     description="Analyzes live PostgreSQL incident state and returns operational directives, SITREP briefings, and contradiction audits.",
@@ -425,6 +429,18 @@ def query_copilot(
             "3. Recommended Action: Contact State Disaster Management Authority (SDMA) control room."
         )
     elif "audit" in q or "fake" in q or "contradiction" in q:
+        # Compute real cross-source consistency from live incident data
+        total_ev = sum(
+            (i.verification_summary.supporting_count + i.verification_summary.contradicting_count)
+            for i in incidents
+            if i.verification_summary
+        )
+        supporting_ev = sum(
+            i.verification_summary.supporting_count
+            for i in incidents
+            if i.verification_summary
+        )
+        consistency_pct = round((supporting_ev / total_ev * 100), 1) if total_ev > 0 else 0.0
         unverified_count = sum(
             1
             for i in incidents
@@ -437,8 +453,8 @@ def query_copilot(
         reply = (
             "EVIDENCE & CONTRADICTION AUDIT REPORT\n\n"
             f"• Flagged / Unverified Incidents: {unverified_count}\n"
-            "• Visual Media Duplicates: 0 detected (via perceptual pHash deduplication)\n"
-            "• Cross-Source Consistency Index: 89.4%"
+            f"• Cross-Source Consistency Index: {consistency_pct}% (computed from {total_ev} evidence items)\n"
+            "• Visual Media Duplicates: 0 detected (via perceptual pHash deduplication)"
         )
     else:
         reply = (

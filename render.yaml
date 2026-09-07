@@ -3,6 +3,7 @@ services:
     name: meteora-backend
     env: docker
     dockerfilePath: Dockerfile.backend
+    dockerContext: .
     plan: free
     region: singapore
     envVars:
@@ -17,8 +18,10 @@ services:
     name: meteora-frontend
     env: docker
     dockerfilePath: frontend/Dockerfile
+    dockerContext: frontend
     plan: free
     region: singapore
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://meteora-backend.onrender.com/api/v1
+

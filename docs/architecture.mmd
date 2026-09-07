@@ -1,0 +1,52 @@
+graph TD
+    classDef t1 fill:#0F172A,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC
+    classDef t2 fill:#0F172A,stroke:#818CF8,stroke-width:2px,color:#F8FAFC
+    classDef t3 fill:#0F172A,stroke:#F43F5E,stroke-width:2px,color:#F8FAFC
+    classDef t4 fill:#0F172A,stroke:#F59E0B,stroke-width:2px,color:#F8FAFC
+    classDef t5 fill:#0F172A,stroke:#10B981,stroke-width:2px,color:#F8FAFC
+    classDef t6 fill:#0F172A,stroke:#06B6D4,stroke-width:2px,color:#F8FAFC
+
+    subgraph TIER1["TIER 1: MULTI-SOURCE INGESTION TIER"]
+        A1["Apache NiFi Data Router & Pipeline Engine"]:::t1
+        A2["IMD CAP XML Feeds + OSINT Social Stream + RSS"]:::t1
+        A3["Citizen Response Mobile App & Operator Portal"]:::t1
+    end
+
+    subgraph TIER2["TIER 2: HIGH-THROUGHPUT STREAMING BROKER"]
+        B1["Apache Kafka Cluster (Partitioned Report Logs)"]:::t2
+        B2["Confluent Schema Registry (Avro / Protobuf)"]:::t2
+        B3["Dead Letter Queue (DLQ) & Fault Buffer"]:::t2
+    end
+
+    subgraph TIER3["TIER 3: REAL-TIME STREAM ANALYTICS & AI"]
+        C1["Apache Flink Stateful Stream Processor"]:::t3
+        C2["ONNX Latent Transformer (384-d Embedding)"]:::t3
+        C3["spaCy Multilingual NLP & Negation Filter"]:::t3
+        C4["Perceptual Image Hashing (dHash) & EXIF GPS"]:::t3
+    end
+
+    subgraph TIER4["TIER 4: SPATIAL-TEMPORAL CORRELATION"]
+        D1["Uber H3 Hexagonal Grid (Res 7 Spatial Index)"]:::t4
+        D2["6-Hour Stateful Sliding Window Stream Join"]:::t4
+        D3["Evidence Weight Calibration (IMD 0.95 | News 0.70)"]:::t4
+        D4["Cross-Source Contradiction & Priority Engine"]:::t4
+    end
+
+    subgraph TIER5["TIER 5: BIG DATA STORAGE & LAKEHOUSE"]
+        E1["PostgreSQL 16 + PostGIS Spatial Database"]:::t5
+        E2["pgvector (384-d Cosine Similarity Search)"]:::t5
+        E3["Apache Iceberg / Parquet Historical Lakehouse"]:::t5
+    end
+
+    subgraph TIER6["TIER 6: COMMAND CENTER & CLOUD EXPORT"]
+        F1["FastAPI REST & Starlette Live WebSockets Gateway"]:::t6
+        F2["Next.js 15 GIS Dashboard (MapLibre + H3)"]:::t6
+        F3["Emergency Response Copilot AI Assistant"]:::t6
+        F4["Automated Government SITREP Exporter (S3)"]:::t6
+    end
+
+    TIER1 --> TIER2
+    TIER2 --> TIER3
+    TIER3 --> TIER4
+    TIER4 --> TIER5
+    TIER5 --> TIER6

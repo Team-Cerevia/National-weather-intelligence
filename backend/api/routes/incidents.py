@@ -482,8 +482,9 @@ def export_sitrep_to_s3(
     incidents_models = db.execute(select(IncidentModel)).scalars().all()
     incidents = [m.to_contract() for m in incidents_models]
 
-    import io
     import csv
+    import io
+
     import boto3
     from botocore.exceptions import BotoCoreError, ClientError
 

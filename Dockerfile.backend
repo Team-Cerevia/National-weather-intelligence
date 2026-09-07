@@ -25,7 +25,6 @@ COPY contracts/ ./contracts/
 COPY nlp/ ./nlp/
 COPY ingestion/ ./ingestion/
 COPY streaming/ ./streaming/
-COPY models/ ./models/
 
 # Expose FastAPI port
 EXPOSE 8000

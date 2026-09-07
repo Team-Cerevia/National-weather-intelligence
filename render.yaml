@@ -1,24 +1,26 @@
 services:
   - type: web
     name: meteora-backend
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    env: docker
+    dockerfilePath: Dockerfile.backend
+    dockerContext: .
     plan: free
     region: singapore
     envVars:
+      - key: DATABASE_URL
+        value: postgresql://weather_user:weather_password@localhost:5432/weather_db
+      - key: REDIS_URL
+        value: redis://localhost:6379/0
       - key: CORS_ORIGINS
         value: "*"
 
   - type: web
     name: meteora-frontend
-    env: node
-    buildCommand: "cd frontend && npm install && npm run build"
-    startCommand: "cd frontend && npm start"
+    env: docker
+    dockerfilePath: Dockerfile
+    dockerContext: frontend
     plan: free
     region: singapore
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://meteora-backend.onrender.com/api/v1
-
-

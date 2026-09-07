@@ -36,7 +36,7 @@ Unlike standard forecasting apps that display radar or numerical predictions, **
 
 ---
 
-## 📸 Platform Showcase & Core Differentiators
+## Platform Showcase & Core Differentiators
 
 > **Core Philosophy**: METEORA is **NOT** a weather forecasting app. It is a **Ground-Truth Verification & Impact Correlation Engine** for emergency response teams, meteorologists, and disaster management authorities.
 
@@ -163,12 +163,12 @@ Raw Unstructured Reports
 
 For deep technical specifications, data contracts, and track architectural breakdowns, refer to the module documentation in [`docs/`](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs):
 
-- 📜 [**Contracts & Shared Data Specs**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/shared_data_contract.md): Pydantic data schemas for `WeatherReport`, `Incident`, and `EvidenceItem`.
-- 📡 [**Ingestion Track (Track A1 & A2)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_a1_social_news.md): RSS feeds, Twitter/X OSINT scrapers, and Open-Meteo API connectors.
-- ⚡ [**Streaming Track (Track B)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_b_streaming.md): Redis Streams queue architecture and async consumers.
-- 🧠 [**Intelligence & NLP Track (Track C)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_c_intelligence.md): ONNX embedding execution, H3 index correlation, and verification algorithms.
-- 🖥️ [**Backend API Track (Track D1)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_d1_backend.md): FastAPI REST endpoints, PostGIS spatial queries, and WebSockets.
-- 🎨 [**Frontend Command Center (Track D2)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_d2_frontend.md): Next.js components, MapLibre map layers, and SITREP generator.
+- [**Contracts & Shared Data Specs**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/shared_data_contract.md): Pydantic data schemas for `WeatherReport`, `Incident`, and `EvidenceItem`.
+- [**Ingestion Track (Track A1 & A2)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_a1_social_news.md): RSS feeds, Twitter/X OSINT scrapers, and Open-Meteo API connectors.
+- [**Streaming Track (Track B)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_b_streaming.md): Redis Streams queue architecture and async consumers.
+- [**Intelligence & NLP Track (Track C)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_c_intelligence.md): ONNX embedding execution, H3 index correlation, and verification algorithms.
+- [**Backend API Track (Track D1)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_d1_backend.md): FastAPI REST endpoints, PostGIS spatial queries, and WebSockets.
+- [**Frontend Command Center (Track D2)**](file:///c:/Users/harve/OneDrive/docs/GitHub/National-weather-intelligence/docs/track_d2_frontend.md): Next.js components, MapLibre map layers, and SITREP generator.
 
 ---
 

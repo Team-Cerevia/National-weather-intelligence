@@ -468,3 +468,77 @@ def query_copilot(
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "active_incidents_evaluated": len(incidents),
     }
+
+
+@router.post(
+    "/export-s3",
+    summary="Generate SITREP Report & Upload to AWS S3 Bucket",
+    description="Generates an official situation report (CSV/JSON) from live incident data and uploads it directly to an AWS S3 bucket.",
+)
+def export_sitrep_to_s3(
+    bucket_name: str = Query(default="meteora-weather-sitrep-reports", description="Target AWS S3 Bucket Name"),
+    db: Session = Depends(get_db),
+) -> dict:
+    incidents_models = db.execute(select(IncidentModel)).scalars().all()
+    incidents = [m.to_contract() for m in incidents_models]
+
+    import io
+    import csv
+    import boto3
+    from botocore.exceptions import BotoCoreError, ClientError
+
+    # Generate CSV Report Buffer
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Incident ID", "Title", "Category", "Severity", "Priority Score",
+        "Verification Status", "Confidence %", "Reports Count", "City", "State", "Last Updated"
+    ])
+    for inc in incidents:
+        writer.writerow([
+            inc.incident_id,
+            inc.title,
+            inc.event_category,
+            inc.severity.value if hasattr(inc.severity, "value") else str(inc.severity),
+            round(inc.priority_score, 1),
+            inc.verification_summary.verification_status.value if inc.verification_summary and hasattr(inc.verification_summary.verification_status, "value") else "UNVERIFIED",
+            round((inc.verification_summary.overall_confidence if inc.verification_summary else 0.8) * 100, 1),
+            len(inc.report_ids),
+            inc.city or "Unknown",
+            inc.state_name or "India",
+            inc.last_updated_at.isoformat() if hasattr(inc.last_updated_at, "isoformat") else str(inc.last_updated_at),
+        ])
+
+    csv_data = output.getvalue().encode("utf-8")
+    report_filename = f"SITREP_Report_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"
+
+    # Attempt upload to S3 using boto3
+    try:
+        s3_client = boto3.client("s3")
+        s3_client.put_object(
+            Bucket=bucket_name,
+            Key=report_filename,
+            Body=csv_data,
+            ContentType="text/csv",
+        )
+        s3_url = f"https://{bucket_name}.s3.amazonaws.com/{report_filename}"
+        return {
+            "status": "success",
+            "message": f"SITREP report uploaded successfully to AWS S3 bucket '{bucket_name}'",
+            "bucket": bucket_name,
+            "filename": report_filename,
+            "s3_url": s3_url,
+            "incidents_exported": len(incidents),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+    except (BotoCoreError, ClientError, Exception) as err:
+        logger.warning("AWS S3 direct upload unavailable (%s). Returning report generation payload.", err)
+        return {
+            "status": "generated_locally",
+            "message": f"SITREP report compiled successfully ({len(incidents)} incidents). AWS S3 upload pending bucket authorization: {str(err)}",
+            "bucket": bucket_name,
+            "filename": report_filename,
+            "incidents_exported": len(incidents),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+

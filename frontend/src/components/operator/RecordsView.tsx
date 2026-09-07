@@ -72,6 +72,21 @@ export function RecordsView({ incidents }: { incidents: Incident[] }) {
           <button className="btn-export-csv" onClick={exportCSV}>
             Export SITREP (CSV)
           </button>
+          <button
+            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition-colors"
+            onClick={async () => {
+              try {
+                const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+                const res = await fetch(`${apiBase}/incidents/export-s3`, { method: "POST" });
+                const data = await res.json();
+                alert(`S3 Report Status: ${data.message}`);
+              } catch (e) {
+                alert("Failed to connect to S3 export endpoint");
+              }
+            }}
+          >
+            Upload SITREP to S3
+          </button>
           <button className="btn-export-json" onClick={downloadJSON}>
             Backup DB (JSON)
           </button>

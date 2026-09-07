@@ -107,12 +107,12 @@ For each incoming report, instead of scanning all incidents, we:
 3. Apply temporal window and event-type checks only to this small candidate set.
 
 ```python
-neighbor_cells = set(h3.grid_disk(report_cell, k=1))   # 7 cells, O(1)
+neighbor_cells = set(h3.grid_disk(report_cell, k=1))  # 7 cells, O(1)
 
 candidates = []
 seen_ids = set()
-for cell in neighbor_cells:                              # 7 iterations
-    for inc in h3_index.get(cell, []):                  # O(1) hash lookup
+for cell in neighbor_cells:  # 7 iterations
+    for inc in h3_index.get(cell, []):  # O(1) hash lookup
         if inc.incident_id not in seen_ids:
             seen_ids.add(inc.incident_id)
             candidates.append(inc)

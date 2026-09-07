@@ -79,8 +79,20 @@ NEGATION_PATTERNS = [
 
 # Weather keywords used for proximity check in negation detection
 _WEATHER_PROXIMITY_KEYWORDS = [
-    "rain", "flood", "storm", "wind", "fog", "hail", "cyclone", "lightning",
-    "heat", "waterlogging", "inundation", "baarish", "baadh", "toofan",
+    "rain",
+    "flood",
+    "storm",
+    "wind",
+    "fog",
+    "hail",
+    "cyclone",
+    "lightning",
+    "heat",
+    "waterlogging",
+    "inundation",
+    "baarish",
+    "baadh",
+    "toofan",
 ]
 
 # Indian Location Gazetteer & NER Patterns for Location Entity Extraction
@@ -184,9 +196,9 @@ class ONNXEmbeddingEngine:
         if self._using_real_model and self._tokenizer is not None and self.session is not None:
             try:
                 encoding = self._tokenizer.encode(text)
-                input_ids = np.array([encoding.ids], dtype=np.int64)                    # (1, 128)
-                attention_mask = np.array([encoding.attention_mask], dtype=np.int64)    # (1, 128)
-                token_type_ids = np.zeros_like(input_ids)                               # (1, 128) — all 0 for single sentence
+                input_ids = np.array([encoding.ids], dtype=np.int64)  # (1, 128)
+                attention_mask = np.array([encoding.attention_mask], dtype=np.int64)  # (1, 128)
+                token_type_ids = np.zeros_like(input_ids)  # (1, 128) — all 0 for single sentence
 
                 outputs = self.session.run(
                     None,
@@ -282,8 +294,13 @@ class NLPExtractor:
                     if abs(word_pos - wp) <= 8:
                         return True
                 # Standalone absolute negation patterns (no proximity needed)
-                if pattern.pattern in (r"\bfalse\s+alarm\b", r"\brumou?r\b", r"\bclear\s+sky\b",
-                                       r"\bsun\s+is\s+out\b", r"\bnormal\s+traffic\b"):
+                if pattern.pattern in (
+                    r"\bfalse\s+alarm\b",
+                    r"\brumou?r\b",
+                    r"\bclear\s+sky\b",
+                    r"\bsun\s+is\s+out\b",
+                    r"\bnormal\s+traffic\b",
+                ):
                     return True
         return False
 

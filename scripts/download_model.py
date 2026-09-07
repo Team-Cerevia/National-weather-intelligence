@@ -78,7 +78,7 @@ def main() -> None:
     if TOKENIZER_PATH.exists() and ONNX_PATH.exists():
         logger.info("✅ Models already present. Nothing to download.")
         logger.info(f"   tokenizer.json : {TOKENIZER_PATH} ({TOKENIZER_PATH.stat().st_size // 1024} KB)")
-        logger.info(f"   model.onnx     : {ONNX_PATH} ({ONNX_PATH.stat().st_size // (1024*1024)} MB)")
+        logger.info(f"   model.onnx     : {ONNX_PATH} ({ONNX_PATH.stat().st_size // (1024 * 1024)} MB)")
         return
 
     if not TOKENIZER_PATH.exists():

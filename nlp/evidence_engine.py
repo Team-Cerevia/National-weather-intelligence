@@ -101,7 +101,11 @@ class EvidenceEngine:
             overall_confidence = 0.30
 
         # Check if any official source exists in supporting evidence
-        has_official_source = any(e.source_type == "official" or e.source.lower() == "imd" for e in evidence_items if e.relationship == EvidenceRelationship.SUPPORTING)
+        has_official_source = any(
+            e.source_type == "official" or e.source.lower() == "imd"
+            for e in evidence_items
+            if e.relationship == EvidenceRelationship.SUPPORTING
+        )
 
         # Verification Status & Incident State Logic
         if contradicting_count > supporting_count and contradicting_count > 1:

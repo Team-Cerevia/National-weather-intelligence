@@ -435,11 +435,7 @@ def query_copilot(
             for i in incidents
             if i.verification_summary
         )
-        supporting_ev = sum(
-            i.verification_summary.supporting_count
-            for i in incidents
-            if i.verification_summary
-        )
+        supporting_ev = sum(i.verification_summary.supporting_count for i in incidents if i.verification_summary)
         consistency_pct = round((supporting_ev / total_ev * 100), 1) if total_ev > 0 else 0.0
         unverified_count = sum(
             1
@@ -491,24 +487,41 @@ def export_sitrep_to_s3(
     # Generate CSV Report Buffer
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow([
-        "Incident ID", "Title", "Category", "Severity", "Priority Score",
-        "Verification Status", "Confidence %", "Reports Count", "City", "State", "Last Updated"
-    ])
+    writer.writerow(
+        [
+            "Incident ID",
+            "Title",
+            "Category",
+            "Severity",
+            "Priority Score",
+            "Verification Status",
+            "Confidence %",
+            "Reports Count",
+            "City",
+            "State",
+            "Last Updated",
+        ]
+    )
     for inc in incidents:
-        writer.writerow([
-            inc.incident_id,
-            inc.title,
-            inc.event_category,
-            inc.severity.value if hasattr(inc.severity, "value") else str(inc.severity),
-            round(inc.priority_score, 1),
-            inc.verification_summary.verification_status.value if inc.verification_summary and hasattr(inc.verification_summary.verification_status, "value") else "UNVERIFIED",
-            round((inc.verification_summary.overall_confidence if inc.verification_summary else 0.8) * 100, 1),
-            len(inc.report_ids),
-            inc.city or "Unknown",
-            inc.state_name or "India",
-            inc.last_updated_at.isoformat() if hasattr(inc.last_updated_at, "isoformat") else str(inc.last_updated_at),
-        ])
+        writer.writerow(
+            [
+                inc.incident_id,
+                inc.title,
+                inc.event_category,
+                inc.severity.value if hasattr(inc.severity, "value") else str(inc.severity),
+                round(inc.priority_score, 1),
+                inc.verification_summary.verification_status.value
+                if inc.verification_summary and hasattr(inc.verification_summary.verification_status, "value")
+                else "UNVERIFIED",
+                round((inc.verification_summary.overall_confidence if inc.verification_summary else 0.8) * 100, 1),
+                len(inc.report_ids),
+                inc.city or "Unknown",
+                inc.state_name or "India",
+                inc.last_updated_at.isoformat()
+                if hasattr(inc.last_updated_at, "isoformat")
+                else str(inc.last_updated_at),
+            ]
+        )
 
     csv_data = output.getvalue().encode("utf-8")
     report_filename = f"SITREP_Report_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"
@@ -542,4 +555,3 @@ def export_sitrep_to_s3(
             "incidents_exported": len(incidents),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-

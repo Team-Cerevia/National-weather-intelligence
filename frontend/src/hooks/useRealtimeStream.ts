@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { WS_URL } from "@/lib/api";
-import type { Incident, StreamEvent } from "@/lib/types";
+import { WS_URL } from "../lib/api";
+import type { Incident, StreamEvent } from "../lib/types";
 
 interface UseRealtimeStreamReturn {
   connected: boolean;

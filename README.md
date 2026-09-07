@@ -64,27 +64,21 @@ Raw Unstructured Reports
 
 ## Technology Stack
 
-### Backend & Data Processing
-- **Language & Runtime**: Python 3.12+ (managed with `uv`)
-- **API Framework**: FastAPI, Pydantic v2, Starlette WebSockets
-- **Database Layer**: PostgreSQL 16 + PostGIS (geospatial queries) + `pgvector` (vector similarity search)
-- **ORMs & Drivers**: SQLAlchemy 2.0 (async), `asyncpg`, `psycopg3`
-- **Streaming & Caching**: Redis Streams, Redis Pub/Sub, `redis-py` async
-
-### NLP & AI Pipeline
-- **Vector Embeddings**: ONNX Runtime (`all-MiniLM-L6-v2` / `bge-small-en-v1.5`), HuggingFace Tokenizers
-- **NLP / Entity Parsing**: spaCy, regex negation rules, custom Location NER extractor
-- **Computer Vision**: Perceptual Image Hashing (`imagehash` / dHash), PIL/Pillow EXIF metadata extraction
-
-### Frontend Dashboard
-- **Framework**: Next.js 15 (App Router, TypeScript)
-- **Styling**: Tailwind CSS (Dark Command Center Theme)
-- **Mapping & GIS**: Leaflet.js / MapLibre GL, Custom H3 Overlay Layers
-- **Icons & UI**: Lucide React, Custom SVG Weather Badges
-
-### Infrastructure & Tooling
-- **Containerization**: Docker, Docker Compose
-- **Testing & Quality**: Pytest (async), Ruff (linter/formatter)
+| Layer / Domain | Technology | Purpose & Implementation Details |
+| :--- | :--- | :--- |
+| **Backend & Runtime** | **Python 3.12+** / `uv` | Asynchronous core engine managed via high-performance `uv` package manager |
+| **API & WebSockets** | **FastAPI** / Pydantic v2 | High-throughput REST API schemas & low-latency Starlette WebSockets for live GIS updates |
+| **Databases** | **PostgreSQL 16** + **PostGIS** | Geospatial indexing (`ST_SetSRID`, `ST_MakePoint`) & transactional spatial state |
+| **Vector Search** | **`pgvector`** | 384-dimensional dense vector similarity search & semantic clustering |
+| **Streaming & Queue** | **Redis Streams** + Pub/Sub | Real-time multi-source report ingestion pipeline & pub/sub event broadcasting |
+| **NLP & AI Engine** | **ONNX Runtime** / Tokenizers | Local neural text embeddings (`paraphrase-multilingual-MiniLM-L12-v2`) |
+| **Spatial Indexing** | **Uber H3 (Resolution 7)** | Hexagonal spatial hashing for multi-report cluster correlation |
+| **Computer Vision** | **`imagehash` (dHash)** / Pillow | Perceptual image hashing for disaster duplicate removal & EXIF GPS coordinate extraction |
+| **Frontend Framework** | **Next.js 15** (TypeScript) | Server-rendered React dashboard with App Router & custom hooks |
+| **GIS Mapping** | **MapLibre GL** / Leaflet.js | High-contrast interactive GIS command map with custom location pin callouts |
+| **Styling & UI** | **Tailwind CSS** / Lucide Icons | Dark command-center theme & responsive weather SVG pill badges |
+| **Cloud & DevOps** | **AWS EC2** / **AWS S3** | Automated single-instance Docker deployment & SITREP report cloud storage |
+| **Testing & Quality** | **Pytest** / **Ruff** | 62 async unit tests & zero-warning linter enforcement |
 
 ---
 

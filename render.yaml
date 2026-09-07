@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: meteora-backend
+    env: docker
+    dockerfilePath: Dockerfile.backend
+    plan: free
+    region: singapore
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://weather_user:weather_password@localhost:5432/weather_db
+      - key: REDIS_URL
+        value: redis://localhost:6379/0
+      - key: CORS_ORIGINS
+        value: "*"
+
+  - type: web
+    name: meteora-frontend
+    env: docker
+    dockerfilePath: frontend/Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://meteora-backend.onrender.com/api/v1

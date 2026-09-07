@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
-import { fetchIncidents } from "../lib/api";
-import type { Incident, IncidentFilters } from "../lib/types";
+import { fetchIncidents } from "@/lib/api";
+import type { Incident, IncidentFilters } from "@/lib/types";
 
 export function useIncidents(filters: IncidentFilters = {}) {
   const key = ["incidents", JSON.stringify(filters)];

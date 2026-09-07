@@ -28,6 +28,8 @@ jobs:
           npm ci || npm install
 
       - name: Next.js Type Check & Build
+        env:
+          NEXT_PUBLIC_API_URL: "http://localhost:8000/api/v1"
         run: |
           cd frontend
           npm run build
